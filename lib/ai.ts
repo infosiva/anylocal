@@ -1,42 +1,54 @@
 /**
  * lib/ai.ts — Universal AI client (canonical template)
  *
- * Features:
- *   - Quality tiers: 'fast' | 'balanced' | 'best' — caller picks the right
- *     model class for the task; each provider routes to the appropriate model.
- *   - Multi-key rotation: add GROQ_API_KEY_1, GROQ_API_KEY_2 etc. to multiply
- *     free-tier capacity. Keys are rotated on quota/rate-limit errors.
- *   - Fallback chain: Groq → Gemini → Cerebras → Anthropic (paid last resort)
- *   - In-memory response cache (1h TTL) via aiCached()
- *   - Edge Config model router: model tiers are read from Vercel Edge Config at
- *     runtime — swap models across ALL projects from the Vercel dashboard with
- *     zero code deploys. Falls back to hardcoded defaults if Edge Config is
- *     unavailable. Dashboard: vercel.com/dashboard/edge-config/ecfg_s5cumfsw58v5mpe9ahpkb7axmigs
+ * Fallback chain (free-first, paid last):
+ *   1. Ollama   (local, 100% free) — gemma4 → qwen3.6 → llama3.2
+ *   2. Groq     (cloud, free tier) — multi-key rotation
+ *   3. Gemini   (cloud, free tier) — multi-key rotation
+ *   4. Cerebras (cloud, free tier)
+ *   5. OpenAI   (paid, but $5 free credit on new accounts)
+ *   6. Anthropic/Claude (paid, last resort)
  *
- * Quality routing:
- *   'fast'     → small/instant models  (8b class)   — simple formatting, classification
- *   'balanced' → mid-tier              (70b class)  — default; most tasks
- *   'best'     → largest available     (scout/235b) — complex reasoning, strategy
+ * You always get a response — at least one provider will work at any time.
+ *
+ * Ollama is skipped automatically on Vercel/production (no OLLAMA_HOST means
+ * it won't be reachable — falls through to Groq instantly).
+ * Set OLLAMA_HOST=http://localhost:11434 in local .env to enable.
+ *
+ * Quality tiers:
+ *   'fast'     → small/instant  — classification, short summaries
+ *   'balanced' → mid-tier       — default; most tasks
+ *   'best'     → largest avail  — complex reasoning, strategy
  *
  * Usage:
- *   import { aiChat, aiCached } from '@/lib/ai'
- *   const reply = await aiChat(messages)                        // balanced
- *   const plan  = await aiChat(messages, system, 2048, 'best')  // best models
+ *   import { callAI, aiChat, aiCached } from '@/lib/ai'
+ *   const reply = await aiChat(messages)
+ *   const plan  = await aiChat(messages, system, 2048, 'best')
  *
- * Capacity scaling (add to .env):
- *   GROQ_API_KEY_1=gsk_...     (free at console.groq.com)
- *   GROQ_API_KEY_2=gsk_...
- *   GEMINI_API_KEY_1=AIza...   (free at aistudio.google.com)
- *   CEREBRAS_API_KEY=csk_...   (free at cloud.cerebras.ai)
+ * Capacity scaling (.env):
+ *   OLLAMA_HOST=http://localhost:11434   (local dev — free, no limits)
+ *   GROQ_API_KEY, GROQ_API_KEY_1, ...   (free at console.groq.com)
+ *   GEMINI_API_KEY, GEMINI_API_KEY_1    (free at aistudio.google.com)
+ *   CEREBRAS_API_KEY                    (free at cloud.cerebras.ai)
  */
 import config from '@/vertical.config'
+
+const _aiSystemPrompt = 'You are a helpful AI assistant.'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export type Quality = 'fast' | 'balanced' | 'best'
 type Msg = { role: 'user' | 'assistant'; content: string }
 export interface AIResponse { text: string; provider: string; model: string }
 
-// ── Hardcoded defaults (used when Edge Config is unavailable) ─────────────────
+// ── Ollama local model tiers ──────────────────────────────────────────────────
+// Order matters: best local model first, fallback to smaller ones
+const OLLAMA_TIERS: Record<Quality, string[]> = {
+  fast:     ['gemma4:latest', 'llama3.2:latest'],
+  balanced: ['qwen3.6:latest', 'gemma4:latest', 'llama3.2:latest'],
+  best:     ['qwen3.6:latest', 'gemma4:latest', 'llama3.2:latest'],
+}
+
+// ── Cloud provider defaults ───────────────────────────────────────────────────
 const DEFAULT_GROQ_TIERS: Record<Quality, string[]> = {
   fast:     ['llama-3.1-8b-instant'],
   balanced: ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'],
@@ -55,6 +67,12 @@ const DEFAULT_CEREBRAS_TIERS: Record<Quality, string[]> = {
   best:     ['qwen-3-235b-a22b-instruct-2507', 'gpt-oss-120b'],
 }
 
+const DEFAULT_OPENAI_TIERS: Record<Quality, string[]> = {
+  fast:     ['gpt-4o-mini'],
+  balanced: ['gpt-4o-mini', 'gpt-4o'],
+  best:     ['gpt-4o', 'gpt-4o-mini'],
+}
+
 const DEFAULT_CLAUDE_TIERS: Record<Quality, string> = {
   fast:     'claude-haiku-4-5-20251001',
   balanced: 'claude-haiku-4-5-20251001',
@@ -62,13 +80,11 @@ const DEFAULT_CLAUDE_TIERS: Record<Quality, string> = {
 }
 
 // ── Edge Config model router ──────────────────────────────────────────────────
-// Cached in-process so we only fetch once per cold start
 let _edgeConfig: {
   groq_tiers?: Record<Quality, string[]>
   gemini_tiers?: Record<Quality, string[]>
   cerebras_tiers?: Record<Quality, string[]>
   claude_tiers?: Record<Quality, string>
-  fallback_order?: string[]
 } | null = null
 
 async function getEdgeConfig() {
@@ -76,9 +92,8 @@ async function getEdgeConfig() {
   const connStr = process.env.EDGE_CONFIG
   if (!connStr) { _edgeConfig = {}; return _edgeConfig }
   try {
-    // Parse the connection string: https://edge-config.vercel.com/ecfg_xxx?token=yyy
-    const url = new URL(connStr)
-    const ecId = url.pathname.replace('/', '')
+    const url   = new URL(connStr)
+    const ecId  = url.pathname.replace('/', '')
     const token = url.searchParams.get('token')
     const res = await fetch(
       `https://api.vercel.com/v1/edge-config/${ecId}/items`,
@@ -102,6 +117,7 @@ async function getTiers() {
     groq:     (ec?.groq_tiers     ?? DEFAULT_GROQ_TIERS)     as Record<Quality, string[]>,
     gemini:   (ec?.gemini_tiers   ?? DEFAULT_GEMINI_TIERS)   as Record<Quality, string[]>,
     cerebras: (ec?.cerebras_tiers ?? DEFAULT_CEREBRAS_TIERS) as Record<Quality, string[]>,
+    openai:   DEFAULT_OPENAI_TIERS,
     claude:   (ec?.claude_tiers   ?? DEFAULT_CLAUDE_TIERS)   as Record<Quality, string>,
   }
 }
@@ -138,21 +154,28 @@ const TIMEOUT_MS = 30_000
 
 function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
   return new Promise((resolve, reject) => {
-    const t = setTimeout(() => reject(new Error(`${label} timed out after ${TIMEOUT_MS / 1000}s`)), TIMEOUT_MS)
+    const t = setTimeout(
+      () => reject(new Error(`${label} timed out after ${TIMEOUT_MS / 1000}s`)),
+      TIMEOUT_MS,
+    )
     promise.then(v => { clearTimeout(t); resolve(v) }, e => { clearTimeout(t); reject(e) })
   })
 }
 
-// ── Generic OpenAI-compatible fetch ──────────────────────────────────────────
+// ── OpenAI-compatible fetch (works for Ollama, Groq, Gemini, Cerebras) ────────
 async function callOpenAICompat(
   baseUrl: string, providerName: string, key: string, model: string,
   system: string, messages: Msg[], maxTokens: number,
 ): Promise<string> {
   const res = await fetch(`${baseUrl}/chat/completions`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(key ? { Authorization: `Bearer ${key}` } : {}),
+    },
     body: JSON.stringify({
-      model, max_tokens: maxTokens,
+      model,
+      max_tokens: maxTokens,
       messages: [{ role: 'system', content: system }, ...messages],
     }),
   })
@@ -164,7 +187,35 @@ async function callOpenAICompat(
   return data.choices?.[0]?.message?.content || ''
 }
 
-// ── Provider callers (model tier + key rotation) ──────────────────────────────
+// ── Ollama caller — local only, skipped if OLLAMA_HOST not set ────────────────
+async function callOllama(
+  quality: Quality, system: string, messages: Msg[], maxTokens: number,
+): Promise<{ text: string; model: string }> {
+  const host = process.env.OLLAMA_HOST
+  if (!host) throw new Error('OLLAMA_HOST not configured')
+
+  const models = OLLAMA_TIERS[quality]
+  for (const model of models) {
+    try {
+      // Check model is actually available before trying
+      const text = await withTimeout(
+        callOpenAICompat(`${host}/v1`, 'Ollama', '', model, system, messages, maxTokens),
+        `Ollama/${model}`,
+      )
+      if (text) {
+        console.log(`[AI] Ollama/${model} responded`)
+        return { text, model }
+      }
+    } catch (e: any) {
+      const msg = (e.message || '').slice(0, 100)
+      console.warn(`[AI] Ollama/${model} skip: ${msg}`)
+      continue
+    }
+  }
+  throw new Error('All Ollama models failed or unavailable')
+}
+
+// ── Cloud provider caller (with key rotation) ─────────────────────────────────
 async function callProvider(
   baseUrl: string, providerName: string, service: string,
   models: string[], system: string, messages: Msg[], maxTokens: number,
@@ -193,6 +244,7 @@ async function callProvider(
   throw new Error(`All ${providerName} models/keys exhausted`)
 }
 
+// ── Anthropic caller ──────────────────────────────────────────────────────────
 async function callAnthropic(
   quality: Quality, system: string, messages: Msg[], maxTokens: number,
 ): Promise<{ text: string; model: string }> {
@@ -203,12 +255,8 @@ async function callAnthropic(
   const { default: Anthropic } = await import('@anthropic-ai/sdk')
   const client = new Anthropic({ apiKey: key })
 
-  // Enable extended thinking (Claude advisor mode) for 'best' quality requests.
   const params: Parameters<typeof client.messages.create>[0] = {
-    model,
-    max_tokens: maxTokens,
-    system,
-    messages,
+    model, max_tokens: maxTokens, system, messages,
   }
   if (quality === 'best') {
     const budget = Math.min(10_000, Math.floor(maxTokens / 2))
@@ -220,7 +268,8 @@ async function callAnthropic(
   return { text: textBlock?.text ?? (res.content[0] as { text: string }).text, model }
 }
 
-// ── Core callAI — used by all projects ───────────────────────────────────────
+// ── Core callAI ───────────────────────────────────────────────────────────────
+// Order: Ollama (local/free) → Groq (free) → Gemini (free) → Cerebras (free) → Anthropic (paid)
 export async function callAI(
   system: string,
   messages: Msg[],
@@ -228,10 +277,15 @@ export async function callAI(
   quality: Quality = 'balanced',
 ): Promise<AIResponse> {
   const tiers = await getTiers()
+
   const providers = [
+    // ── Free tier (always try these first) ───────────────────────────────────
+    { name: 'ollama',    fn: () => callOllama(quality, system, messages, maxTokens) },
     { name: 'groq',      fn: () => callProvider('https://api.groq.com/openai/v1',                          'Groq',     'GROQ',     tiers.groq[quality],     system, messages, maxTokens) },
     { name: 'gemini',    fn: () => callProvider('https://generativelanguage.googleapis.com/v1beta/openai', 'Gemini',   'GEMINI',   tiers.gemini[quality],   system, messages, maxTokens) },
     { name: 'cerebras',  fn: () => callProvider('https://api.cerebras.ai/v1',                              'Cerebras', 'CEREBRAS', tiers.cerebras[quality], system, messages, maxTokens) },
+    // ── Paid fallback (only hit if all free tiers are exhausted) ─────────────
+    { name: 'openai',    fn: () => callProvider('https://api.openai.com/v1',                               'OpenAI',   'OPENAI',   tiers.openai[quality],   system, messages, maxTokens) },
     { name: 'anthropic', fn: () => callAnthropic(quality, system, messages, maxTokens) },
   ]
 
@@ -252,14 +306,14 @@ export async function callAI(
   throw new Error(`All AI providers exhausted. Tried: ${tried.join(' | ')}`)
 }
 
-// ── Convenience wrapper (backward-compatible with old aiChat signature) ────────
+// ── Convenience wrapper ───────────────────────────────────────────────────────
 export async function aiChat(
   messages: Msg[],
   systemPrompt?: string,
   maxTokens = 700,
   quality: Quality = 'balanced',
 ): Promise<string> {
-  const system = systemPrompt ?? config.aiSystemPrompt
+  const system = systemPrompt ?? (config as any).aiSystemPrompt ?? _aiSystemPrompt
   const { text } = await callAI(system, messages, maxTokens, quality)
   return text
 }
