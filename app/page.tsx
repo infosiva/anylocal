@@ -1,16 +1,48 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import config from '@/vertical.config'
 import { Search, ArrowRight, Star, Shield, Zap, MapPin } from 'lucide-react'
 
 const POPULAR_SEARCHES = [
-  'Plumber in London',
-  'Electrician near me',
-  'Builder in Manchester',
-  'Cleaner in Sydney',
-  'Gardener in New York',
-  'HVAC in Dubai',
+  'Best Italian restaurant in London',
+  'Plumber in Manchester',
+  'Hotel in Dubai',
+  'Dentist near Sydney',
+  'Gym in New York',
+  'Hair salon in Singapore',
+  'Electrician in Birmingham',
+  'Coffee shop in Paris',
+]
+
+const CATEGORIES = [
+  // Food & Drink
+  { id: 'restaurant',   label: 'Restaurants',    icon: '🍽️' },
+  { id: 'cafe',         label: 'Cafes',          icon: '☕' },
+  { id: 'pub',          label: 'Pubs & Bars',    icon: '🍺' },
+  // Stays
+  { id: 'hotel',        label: 'Hotels',         icon: '🏨' },
+  // Home Trades
+  { id: 'plumber',      label: 'Plumbers',       icon: '🔧' },
+  { id: 'electrician',  label: 'Electricians',   icon: '⚡' },
+  { id: 'builder',      label: 'Builders',       icon: '🏗️' },
+  { id: 'cleaner',      label: 'Cleaners',       icon: '🧹' },
+  // Health
+  { id: 'dentist',      label: 'Dentists',       icon: '🦷' },
+  { id: 'doctor',       label: 'Doctors',        icon: '🩺' },
+  { id: 'gym',          label: 'Gyms',           icon: '🏋️' },
+  { id: 'pharmacy',     label: 'Pharmacies',     icon: '💊' },
+  // Beauty
+  { id: 'salon',        label: 'Hair Salons',    icon: '💇' },
+  { id: 'spa',          label: 'Spas',           icon: '💆' },
+  // Professional
+  { id: 'lawyer',       label: 'Lawyers',        icon: '⚖️' },
+  { id: 'estate-agent', label: 'Estate Agents',  icon: '🏠' },
+  // Auto
+  { id: 'mechanic',     label: 'Mechanics',      icon: '🚗' },
+  // Other
+  { id: 'vet',          label: 'Vets',           icon: '🐾' },
+  { id: 'school',       label: 'Schools',        icon: '🏫' },
+  { id: 'supermarket',  label: 'Supermarkets',   icon: '🛒' },
 ]
 
 export default function HomePage() {
@@ -18,9 +50,9 @@ export default function HomePage() {
   const [query, setQuery] = useState('')
 
   function handleSearch(q?: string) {
-    const term = q ?? query
-    if (!term.trim()) return
-    router.push(`/search?q=${encodeURIComponent(term.trim())}`)
+    const term = (q ?? query).trim()
+    if (!term) return
+    router.push(`/search?q=${encodeURIComponent(term)}`)
   }
 
   return (
@@ -28,22 +60,23 @@ export default function HomePage() {
 
       {/* ── HERO ─────────────────────────────────────────── */}
       <section className="relative px-6 pt-20 pb-24 max-w-5xl mx-auto text-center">
-        {/* Glow blob */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full opacity-20 blur-3xl -z-10 bg-gradient-to-br from-orange-600 to-amber-400" />
 
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 text-xs font-medium mb-6">
           <Zap size={12} />
-          AI-ranked by real reviews — free to use
+          AI reads the reviews honestly — free to use
         </div>
 
-        <h1 className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight mb-6">
-          <span className="text-white">Find trusted tradespeople </span>
-          <span className="bg-gradient-to-r from-orange-400 to-amber-200 bg-clip-text text-transparent">near you, anywhere</span>
+        <h1 className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight mb-4">
+          <span className="text-white">Find </span>
+          <span className="bg-gradient-to-r from-orange-400 to-amber-200 bg-clip-text text-transparent">anything local</span>
+          <br />
+          <span className="text-white">anywhere in the world</span>
         </h1>
 
         <p className="text-white/55 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-          Type what you need and where — our AI searches Google&apos;s business database, reads hundreds of reviews,
-          and gives you an honest summary. No spin, no paid placements.
+          Restaurants, hotels, plumbers, dentists, lawyers, gyms — search anything.
+          Our AI reads the real reviews and gives you an honest summary, not just star ratings.
         </p>
 
         {/* Search bar */}
@@ -55,8 +88,9 @@ export default function HomePage() {
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSearch()}
-              placeholder='e.g. "plumber in London" or "electrician near Sydney"'
+              placeholder='e.g. "best Thai restaurant in Bangkok" or "plumber in London"'
               className="flex-1 bg-transparent text-white placeholder:text-white/30 outline-none text-base"
+              autoFocus
             />
             <button
               onClick={() => handleSearch()}
@@ -67,7 +101,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Quick searches */}
+        {/* Popular searches */}
         <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
           <span className="text-white/30 text-xs">Try:</span>
           {POPULAR_SEARCHES.map(s => (
@@ -84,8 +118,8 @@ export default function HomePage() {
         {/* Trust row */}
         <div className="flex flex-wrap items-center justify-center gap-6 mt-10 text-sm text-white/40">
           <span className="flex items-center gap-1.5"><Shield size={14} className="text-orange-400" />Real Google reviews</span>
-          <span className="flex items-center gap-1.5"><Star size={14} className="text-orange-400" />AI sentiment analysis</span>
-          <span className="flex items-center gap-1.5"><MapPin size={14} className="text-orange-400" />Global coverage</span>
+          <span className="flex items-center gap-1.5"><Star size={14} className="text-orange-400" />Honest AI analysis</span>
+          <span className="flex items-center gap-1.5"><MapPin size={14} className="text-orange-400" />Works in every country</span>
         </div>
       </section>
 
@@ -93,10 +127,10 @@ export default function HomePage() {
       <section className="border-y border-white/[0.06] py-8 bg-white/[0.02]">
         <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
-            { n: '200M+', l: 'Businesses indexed' },
+            { n: '200M+', l: 'Businesses worldwide' },
             { n: '50+',   l: 'Countries covered' },
-            { n: '< 10s', l: 'To get results' },
-            { n: '£0',    l: 'To search' },
+            { n: '< 10s', l: 'To get AI results' },
+            { n: '£0',    l: 'Free to search' },
           ].map(s => (
             <div key={s.l}>
               <div className="text-2xl font-extrabold bg-gradient-to-r from-orange-400 to-amber-200 bg-clip-text text-transparent">{s.n}</div>
@@ -106,22 +140,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── TRADE CATEGORIES ─────────────────────────────── */}
+      {/* ── CATEGORIES ───────────────────────────────────── */}
       <section className="py-20 px-6 max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-white mb-3">Browse by trade</h2>
-          <p className="text-white/45">Or search anything above — we cover all trades globally</p>
+          <h2 className="text-3xl font-bold text-white mb-3">Browse by category</h2>
+          <p className="text-white/45">Or search anything above — restaurants, hotels, services, trades and more</p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {config.tradeCategories.map(cat => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          {CATEGORIES.map(cat => (
             <button
               key={cat.id}
               onClick={() => handleSearch(cat.label)}
-              className="bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm rounded-2xl hover:border-orange-500/30 hover:bg-white/[0.06] transition-all duration-200 hover:shadow-xl hover:shadow-orange-500/20 p-5 flex flex-col gap-2 group text-left"
+              className="bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm rounded-2xl hover:border-orange-500/30 hover:bg-white/[0.06] transition-all duration-200 hover:shadow-xl hover:shadow-orange-500/10 p-4 flex flex-col items-center gap-2 group"
             >
               <span className="text-3xl">{cat.icon}</span>
-              <span className="font-semibold text-white">{cat.label}</span>
-              <span className="text-white/45 text-xs leading-snug">{cat.synonyms.slice(0, 2).join(', ')}</span>
+              <span className="font-medium text-white/80 text-sm text-center leading-snug">{cat.label}</span>
             </button>
           ))}
         </div>
@@ -131,14 +164,14 @@ export default function HomePage() {
       <section className="py-20 px-6 bg-white/[0.02] border-y border-white/[0.06]">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-3">How {config.name} works</h2>
-            <p className="text-white/45">Not just star ratings — AI reads what people actually said</p>
+            <h2 className="text-3xl font-bold text-white mb-3">How AnyLocal works</h2>
+            <p className="text-white/45">Not just star ratings — AI reads what people actually experienced</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { icon: '🔍', step: '1', title: 'Type what you need', desc: 'Tell us the trade and your location in plain English. No forms or tick boxes.' },
-              { icon: '🤖', step: '2', title: 'AI reads the reviews', desc: 'We fetch real Google reviews and use AI to summarise punctuality, quality, and value.' },
-              { icon: '📞', step: '3', title: 'Call the best match', desc: 'See honest rankings and contact details. No booking fees — call them directly.' },
+              { icon: '🔍', step: '1', title: 'Search anything, anywhere', desc: 'Type what you need and where — restaurant, hotel, dentist, plumber. Any business, any city, any country.' },
+              { icon: '🤖', step: '2', title: 'AI reads the real reviews', desc: 'We fetch live Google reviews and AI summarises what customers actually said — good and bad, honestly.' },
+              { icon: '📞', step: '3', title: 'Contact them directly', desc: 'Get phone numbers and addresses. No booking fees, no middlemen — just direct contact with the best match.' },
             ].map(step => (
               <div key={step.step} className="text-center">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-600 to-orange-400 flex items-center justify-center text-2xl mx-auto mb-4">
@@ -153,20 +186,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── WHY TRADESPOT ────────────────────────────────── */}
+      {/* ── WHY ANYLOCAL ─────────────────────────────────── */}
       <section className="py-20 px-6 max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-white mb-3">Not just another directory</h2>
-          <p className="text-white/45">We built what the others are missing</p>
+          <h2 className="text-3xl font-bold text-white mb-3">Why AnyLocal?</h2>
+          <p className="text-white/45">Google shows you results. We tell you what they&apos;re actually like.</p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
-            { icon: '🧠', title: 'AI review analysis', desc: 'We don\'t just show star ratings. AI reads every review to surface what customers actually experienced.' },
-            { icon: '🌍', title: 'Global coverage', desc: 'Works in London, Sydney, New York, Dubai — anywhere Google Maps has businesses.' },
-            { icon: '⚡', title: 'Real-time results', desc: 'Live data from Google Places — no stale listings, no out-of-date phone numbers.' },
-            { icon: '🔒', title: 'No paid rankings', desc: 'Rankings are based purely on review sentiment and volume. We don\'t accept sponsored placements.' },
-            { icon: '💬', title: 'Honest summaries', desc: 'AI gives you the good and the bad — not a curated highlight reel.' },
-            { icon: '📱', title: 'Direct contact', desc: 'Get phone numbers and addresses instantly. No middleman booking fee.' },
+            { icon: '🌍', title: 'Truly global', desc: 'Works in every country where Google Maps has data — London, Dubai, Sydney, New York, Tokyo. No region limits.' },
+            { icon: '🧠', title: 'AI reads reviews', desc: 'We don\'t just show you stars. AI reads the text and tells you about food quality, wait times, value, service attitude.' },
+            { icon: '🔒', title: 'No paid rankings', desc: 'Results are ranked purely by review trust score — rating × review volume. Zero sponsored placements.' },
+            { icon: '⚡', title: 'Live data', desc: 'Pulled fresh from Google Places every search. No outdated listings, no closed businesses shown as open.' },
+            { icon: '💬', title: 'Honest — good and bad', desc: 'If the reviews mention slow service or a rude owner, the AI summary will say so. No sugarcoating.' },
+            { icon: '📱', title: 'Direct contact', desc: 'Phone numbers, addresses, websites — all surfaced immediately. No booking wall, no commission.' },
           ].map(f => (
             <div key={f.title} className="bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm rounded-2xl p-5 flex gap-4 items-start">
               <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-xl">
@@ -186,13 +219,13 @@ export default function HomePage() {
         <div className="max-w-3xl mx-auto text-center bg-white/[0.03] border border-orange-500/20 rounded-3xl p-12 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-orange-600 to-amber-400 opacity-5 rounded-3xl" />
           <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 relative">
-            Find your tradesperson now
+            Find anything local, right now
           </h2>
-          <p className="text-white/50 mb-8 text-lg relative">Free to use. No registration. Results in seconds.</p>
+          <p className="text-white/50 mb-8 text-lg relative">Free. No account. Results in seconds. Works everywhere.</p>
           <div className="relative flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
             <input
               type="text"
-              placeholder='e.g. "plumber in Manchester"'
+              placeholder='e.g. "pizza in Rome" or "dentist in Dubai"'
               className="flex-1 bg-white/[0.06] border border-white/[0.12] rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-orange-500/50 transition-colors"
               onKeyDown={e => {
                 if (e.key === 'Enter') {
