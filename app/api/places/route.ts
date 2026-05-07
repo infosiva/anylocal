@@ -73,6 +73,8 @@ export async function POST(req: NextRequest) {
         website:  p.websiteUri ?? null,
         open:     p.regularOpeningHours?.openNow ?? null,
         score:    (p.rating ?? 0) * Math.log((p.userRatingCount ?? 0) + 1),
+        lat:      p.location?.latitude ?? null,
+        lng:      p.location?.longitude ?? null,
       }))
       .sort((a, b) => b.score - a.score)
       .slice(0, 8)

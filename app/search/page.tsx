@@ -1,7 +1,9 @@
 'use client'
-import { useEffect, useState, useRef, Suspense } from 'react'
+import { useEffect, useState, useRef, Suspense, lazy } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Search, ArrowRight, Star, Phone, Globe, MapPin, Clock, ChevronDown, ChevronUp } from 'lucide-react'
+import { Search, ArrowRight, Star, Phone, Globe, MapPin, Clock, ChevronDown, ChevronUp, List, Map } from 'lucide-react'
+
+const MapView = lazy(() => import('@/components/MapView'))
 
 interface PlaceResult {
   id:       string
@@ -13,6 +15,8 @@ interface PlaceResult {
   website:  string | null
   open:     boolean | null
   score:    number
+  lat:      number | null
+  lng:      number | null
 }
 
 interface PlaceDetail extends PlaceResult {
@@ -196,6 +200,7 @@ function SearchPageInner() {
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
   const [searched, setSearched] = useState(initialQuery)
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
   const didSearch = useRef(false)
 
   async function doSearch(q: string) {
@@ -275,13 +280,37 @@ function SearchPageInner() {
             <p className="text-white/50 text-sm">
               {results.length} result{results.length !== 1 ? 's' : ''} for <span className="text-white/80">&ldquo;{searched}&rdquo;</span>
             </p>
-            <span className="text-white/30 text-xs">Ranked by AI trust score</span>
+            <div className="flex items-center gap-2">
+              <span className="text-white/30 text-xs">Ranked by AI trust score</span>
+              <div className="flex items-center gap-1 ml-2 bg-white/[0.06] border border-white/[0.10] rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${viewMode === 'list' ? 'bg-orange-500/25 text-orange-300' : 'text-white/40 hover:text-white/60'}`}
+                >
+                  <List size={13} /> List
+                </button>
+                <button
+                  onClick={() => setViewMode('map')}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${viewMode === 'map' ? 'bg-orange-500/25 text-orange-300' : 'text-white/40 hover:text-white/60'}`}
+                >
+                  <Map size={13} /> Map
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="space-y-4">
-            {results.map((place, i) => (
-              <ResultCard key={place.id} place={place} rank={i + 1} />
-            ))}
-          </div>
+
+          {viewMode === 'list' ? (
+            <div className="space-y-4">
+              {results.map((place, i) => (
+                <ResultCard key={place.id} place={place} rank={i + 1} />
+              ))}
+            </div>
+          ) : (
+            <Suspense fallback={<div className="h-96 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-white/40 text-sm">Loading map…</div>}>
+              <MapView results={results} />
+            </Suspense>
+          )}
+
           <p className="text-center text-white/25 text-xs mt-8">
             Results from Google Places API · AI review analysis by TradeSpot
           </p>
