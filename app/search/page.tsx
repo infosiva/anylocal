@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState, useRef, Suspense, lazy } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Search, ArrowRight, Star, Phone, Globe, MapPin, Clock, ChevronDown, ChevronUp, List, Map } from 'lucide-react'
+import { Search, ArrowRight, Star, Phone, Globe, MapPin, Clock, ChevronDown, ChevronUp, List, Map, Mic, MicOff } from 'lucide-react'
 
 const MapView = lazy(() => import('@/components/MapView'))
 
@@ -202,7 +202,37 @@ function SearchPageInner() {
   const [searched, setSearched] = useState(initialQuery)
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
   const [locationLabel, setLocationLabel] = useState<string | null>(null)
+  const [listening, setListening] = useState(false)
+  const recognitionRef = useRef<any>(null)
   const didSearch = useRef(false)
+
+  function startVoice() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SpeechRecognition = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition
+    if (!SpeechRecognition) { alert('Voice not supported in this browser'); return }
+
+    const rec = new SpeechRecognition()
+    rec.lang = 'en-GB'
+    rec.continuous = false
+    rec.interimResults = false
+
+    rec.onstart  = () => setListening(true)
+    rec.onend    = () => setListening(false)
+    rec.onerror  = () => setListening(false)
+    rec.onresult = (e: any) => {
+      const transcript = e.results[0][0].transcript
+      setQuery(transcript)
+      doSearch(transcript)
+    }
+
+    recognitionRef.current = rec
+    rec.start()
+  }
+
+  function stopVoice() {
+    recognitionRef.current?.stop()
+    setListening(false)
+  }
 
   // Returns GPS coords from browser
   async function detectCoords(): Promise<{ lat: number; lng: number; city: string | null } | null> {
@@ -287,20 +317,29 @@ function SearchPageInner() {
     <div className="max-w-3xl mx-auto px-6 py-10">
 
       {/* Search bar */}
-      <div className="flex items-center gap-3 bg-white/[0.06] border border-white/[0.12] rounded-2xl px-5 py-4 mb-8 focus-within:border-orange-500/50 transition-colors">
+      <div className={`flex items-center gap-3 bg-white/[0.06] border rounded-2xl px-5 py-4 mb-8 transition-colors ${listening ? 'border-red-500/60 bg-red-500/[0.04]' : 'border-white/[0.12] focus-within:border-orange-500/50'}`}>
         <Search size={20} className="text-white/40 flex-shrink-0" />
         <input
           type="text"
-          value={query}
+          value={listening ? '🎤 Listening…' : query}
           onChange={e => setQuery(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && doSearch(query)}
-          placeholder='e.g. "plumber in London" or "electrician near Sydney"'
+          placeholder='e.g. "plumber nearby" or "dentist in Manchester"'
           className="flex-1 bg-transparent text-white placeholder:text-white/30 outline-none text-base"
+          readOnly={listening}
           autoFocus
         />
+        {/* Mic button */}
+        <button
+          onClick={listening ? stopVoice : startVoice}
+          title={listening ? 'Stop listening' : 'Search by voice'}
+          className={`flex-shrink-0 p-2 rounded-xl transition-all duration-200 ${listening ? 'bg-red-500/25 text-red-400 animate-pulse' : 'bg-white/[0.06] text-white/40 hover:text-white/70 hover:bg-white/[0.10]'}`}
+        >
+          {listening ? <MicOff size={18} /> : <Mic size={18} />}
+        </button>
         <button
           onClick={() => doSearch(query)}
-          disabled={loading}
+          disabled={loading || listening}
           className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-700 hover:to-orange-500 transition-all duration-200 disabled:opacity-50"
         >
           {loading ? 'Searching...' : 'Search'} <ArrowRight size={16} />
