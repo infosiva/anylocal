@@ -205,6 +205,34 @@ function SearchPageInner() {
   const [listening, setListening] = useState(false)
   const recognitionRef = useRef<any>(null)
   const didSearch = useRef(false)
+  const cachedCoords = useRef<{ lat: number; lng: number; city: string | null } | null>(null)
+  const coordsReady  = useRef<Promise<void> | null>(null)
+
+  // Kick off geolocation immediately on mount — cache result for doSearch
+  useEffect(() => {
+    coordsReady.current = new Promise(resolve => {
+      if (!navigator.geolocation) return resolve()
+      navigator.geolocation.getCurrentPosition(
+        async pos => {
+          const { latitude: lat, longitude: lng } = pos.coords
+          let city: string | null = null
+          try {
+            const r = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
+              { headers: { 'Accept-Language': 'en' } }
+            )
+            const d = await r.json()
+            const a = d.address ?? {}
+            city = a.city ?? a.town ?? a.village ?? a.county ?? null
+          } catch {}
+          cachedCoords.current = { lat, lng, city }
+          resolve()
+        },
+        () => resolve(),
+        { timeout: 5000 }
+      )
+    })
+  }, [])
 
   function startVoice() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -234,32 +262,6 @@ function SearchPageInner() {
     setListening(false)
   }
 
-  // Returns GPS coords from browser
-  async function detectCoords(): Promise<{ lat: number; lng: number; city: string | null } | null> {
-    return new Promise(resolve => {
-      if (!navigator.geolocation) return resolve(null)
-      navigator.geolocation.getCurrentPosition(
-        async pos => {
-          const { latitude: lat, longitude: lng } = pos.coords
-          // Best-effort reverse geocode for display label only
-          let city: string | null = null
-          try {
-            const res = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
-              { headers: { 'Accept-Language': 'en' } }
-            )
-            const data = await res.json()
-            const addr = data.address ?? {}
-            city = addr.city ?? addr.town ?? addr.village ?? addr.county ?? null
-          } catch {}
-          resolve({ lat, lng, city })
-        },
-        () => resolve(null),
-        { timeout: 5000 }
-      )
-    })
-  }
-
   // Heuristic: query already mentions a location if it contains "in", "near", "at" + a word
   function hasLocation(q: string): boolean {
     return /\b(in|near|at|around)\s+\w/i.test(q)
@@ -271,9 +273,10 @@ function SearchPageInner() {
 
     let coords: { lat: number; lng: number } | null = null
 
-    // Auto-detect GPS if no location in query
+    // Wait for cached geolocation (already requested on mount)
     if (!hasLocation(finalQ)) {
-      const detected = await detectCoords()
+      if (coordsReady.current) await coordsReady.current
+      const detected = cachedCoords.current
       if (detected) {
         coords = { lat: detected.lat, lng: detected.lng }
         setLocationLabel(detected.city)
