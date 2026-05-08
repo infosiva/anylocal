@@ -40,10 +40,11 @@ export async function POST(req: NextRequest) {
 
   const leadId = crypto.randomUUID()
   const createdAt = new Date().toISOString()
+  const warnings: string[] = []
 
-  // Save to Supabase (best effort — don't fail if not configured)
+  // Save to Supabase — track failure, don't silently swallow
   if (supabase) {
-    await supabase.from('leads').insert({
+    const { error: dbErr } = await supabase.from('leads').insert({
       id:              leadId,
       name,
       email,
@@ -52,12 +53,19 @@ export async function POST(req: NextRequest) {
       postcode,
       businesses:      JSON.stringify(businesses),
       created_at:      createdAt,
-}).then(({ error: e }) => { if (e) console.error('[leads] Supabase insert failed:', e.message) })
+    })
+    if (dbErr) {
+      console.error('[leads] Supabase insert failed:', dbErr.message)
+      warnings.push('lead_save_failed')
+    }
+  } else {
+    console.warn('[leads] Supabase not configured — lead not persisted')
+    warnings.push('lead_save_skipped')
   }
 
-  // Send confirmation to user
+  // Send confirmation to user — track failure
   if (resend) {
-    await resend.emails.send({
+    const userEmailResult = await resend.emails.send({
       from:    'AnyLocal <leads@anylocal.app>',
       to:      email,
       subject: `Your quote request has been sent — ${businesses.map(b => b.name).join(', ')}`,
@@ -78,7 +86,10 @@ export async function POST(req: NextRequest) {
           <p style="color:#aaa;font-size:12px;">AnyLocal — Find anything local, anywhere</p>
         </div>
       `,
-    }).catch(e => console.error('[leads] User confirmation email failed:', e.message))
+    }).catch(e => { console.error('[leads] User confirmation email failed:', e.message); return { error: e } })
+    if ('error' in userEmailResult && userEmailResult.error) {
+      warnings.push('confirmation_email_failed')
+    }
 
     // Notify platform (us) of new lead
     await resend.emails.send({
@@ -100,7 +111,19 @@ export async function POST(req: NextRequest) {
         </div>
       `,
     }).catch(e => console.error('[leads] Admin notification failed:', e.message))
+  } else {
+    console.warn('[leads] Resend not configured — emails not sent')
+    warnings.push('emails_skipped')
   }
 
-  return NextResponse.json({ ok: true, leadId })
+  // If both DB and email failed, surface it so the UI can warn the user
+  const criticalFailure = warnings.includes('lead_save_failed') && warnings.includes('confirmation_email_failed')
+  if (criticalFailure) {
+    return NextResponse.json(
+      { ok: false, error: 'We could not save your request right now. Please try again or call the businesses directly.', warnings },
+      { status: 503 }
+    )
+  }
+
+  return NextResponse.json({ ok: true, leadId, warnings: warnings.length ? warnings : undefined })
 }

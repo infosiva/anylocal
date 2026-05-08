@@ -11,29 +11,41 @@ const FIELD_MASK = [
   'places.websiteUri', 'places.businessStatus', 'places.location',
 ].join(',')
 
-async function searchPlaces(query: string, lat?: number, lng?: number): Promise<any[]> {
-  if (!PLACES_KEY) return []
+type PlacesResult = { places: any[]; error?: string }
+
+async function searchPlaces(query: string, lat?: number, lng?: number): Promise<PlacesResult> {
+  if (!PLACES_KEY) return { places: [], error: 'not_configured' }
   const body: Record<string, unknown> = { textQuery: query, maxResultCount: 5, languageCode: 'en' }
   if (lat && lng) {
     body.locationBias = { circle: { center: { latitude: lat, longitude: lng }, radius: 50000 } }
   }
-  const res = await fetch('https://places.googleapis.com/v1/places:searchText', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': PLACES_KEY, 'X-Goog-FieldMask': FIELD_MASK },
-    body: JSON.stringify(body),
-  })
-  if (!res.ok) return []
-  const data = await res.json()
-  return (data.places ?? []).map((p: any) => ({
-    name: p.displayName?.text ?? '',
-    address: p.formattedAddress ?? '',
-    rating: p.rating ?? 0,
-    reviews: p.userRatingCount ?? 0,
-    phone: p.internationalPhoneNumber ?? null,
-    website: p.websiteUri ?? null,
-    lat: p.location?.latitude ?? null,
-    lng: p.location?.longitude ?? null,
-  }))
+  try {
+    const res = await fetch('https://places.googleapis.com/v1/places:searchText', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': PLACES_KEY, 'X-Goog-FieldMask': FIELD_MASK },
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) {
+      const detail = await res.text().catch(() => '')
+      console.error('[Places] API error:', res.status, detail.slice(0, 200))
+      return { places: [], error: 'api_error' }
+    }
+    const data = await res.json()
+    const places = (data.places ?? []).map((p: any) => ({
+      name: p.displayName?.text ?? '',
+      address: p.formattedAddress ?? '',
+      rating: p.rating ?? 0,
+      reviews: p.userRatingCount ?? 0,
+      phone: p.internationalPhoneNumber ?? null,
+      website: p.websiteUri ?? null,
+      lat: p.location?.latitude ?? null,
+      lng: p.location?.longitude ?? null,
+    }))
+    return { places }
+  } catch (e) {
+    console.error('[Places] Fetch failed:', e)
+    return { places: [], error: 'network_error' }
+  }
 }
 
 // Detect if the last user message is a local search intent
@@ -57,7 +69,10 @@ function extractSearchIntent(text: string): { query: string } | null {
   return null
 }
 
-function formatPlacesForChat(places: any[]): string {
+function formatPlacesForChat(places: any[], error?: string): string {
+  if (error === 'api_error' || error === 'network_error') {
+    return '\n\n_Search service is temporarily unavailable. Try again shortly, or search Google Maps directly._'
+  }
   if (!places.length) return '\n\n_No results found — try being more specific or adding a city name._'
   return '\n\n' + places.map((p, i) => {
     const rating = p.rating ? `⭐ ${p.rating.toFixed(1)} (${p.reviews} reviews)` : ''
@@ -82,15 +97,15 @@ export async function POST(req: NextRequest) {
 
     if (intent) {
       // Run Places search in parallel with AI response
-      const [places, aiReply] = await Promise.all([
+      const [placesResult, aiReply] = await Promise.all([
         searchPlaces(intent.query, lat, lng),
         aiChat(messages, `You are a helpful local search assistant for AnyLocal.
 When the user asks to find a place or service, give a short 1-2 sentence intro, then say "Here are the top results:" — the actual business listings will be appended automatically after your response.
 Keep your response brief. Do not list businesses yourself.`),
       ])
 
-      const placesBlock = formatPlacesForChat(places)
-      return NextResponse.json({ reply: aiReply + placesBlock, places })
+      const placesBlock = formatPlacesForChat(placesResult.places, placesResult.error)
+      return NextResponse.json({ reply: aiReply + placesBlock, places: placesResult.places, placesError: placesResult.error ?? null })
     }
 
     // Non-search message — regular AI chat
