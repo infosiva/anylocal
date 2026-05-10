@@ -4,6 +4,7 @@ import './globals.css'
 import { getMeshStyle, getScrollbarColor, COLOR_MAP } from '@/lib/themeColors'
 import Link from 'next/link'
 import ChatBot from '@/components/ChatBot'
+import OwnerAssistant from '@/components/OwnerPanel'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -70,6 +71,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </main>
 
         <ChatBot />
+        <OwnerAssistant />
 
         <footer className="border-t border-white/[0.06] py-10 px-6 mt-20">
           <div className="max-w-6xl mx-auto">
