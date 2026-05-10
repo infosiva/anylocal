@@ -190,6 +190,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── TRADESPERSON CTA BANNER ──────────────────────── */}
+      <div className="max-w-5xl mx-auto px-6 mb-6">
+        <a href="/for-businesses" className="flex items-center justify-between gap-4 bg-orange-500/8 border border-orange-500/25 rounded-2xl px-6 py-4 hover:bg-orange-500/12 transition-all group">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🔧</span>
+            <div>
+              <p className="text-white font-semibold text-sm">Are you a tradesperson or local business?</p>
+              <p className="text-white/45 text-xs">List free for 30 days · 0% commission · £15/month after trial</p>
+            </div>
+          </div>
+          <span className="text-orange-400 text-sm font-semibold flex items-center gap-1 flex-shrink-0 group-hover:gap-2 transition-all">
+            List your trade <ArrowRight size={14} />
+          </span>
+        </a>
+      </div>
+
       {/* ── STATS ────────────────────────────────────────── */}
       <section className="border-y border-white/[0.06] py-8 bg-white/[0.02]">
         <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">

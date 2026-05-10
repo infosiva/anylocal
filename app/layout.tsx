@@ -45,15 +45,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="flex items-center gap-2">
               <Link
                 href="/search"
-                className="text-sm text-white/60 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/[0.06] transition-colors"
+                className="text-sm text-white/60 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/[0.06] transition-colors hidden sm:block"
               >
                 Browse
               </Link>
               <Link
-                href="/"
+                href="/for-businesses"
+                className="text-sm text-orange-300 hover:text-orange-200 px-3 py-1.5 rounded-lg hover:bg-orange-500/[0.08] border border-orange-500/20 transition-colors hidden sm:block"
+              >
+                For businesses
+              </Link>
+              <Link
+                href="/search"
                 className="text-sm font-semibold bg-orange-500/90 hover:bg-orange-500 text-white px-4 py-1.5 rounded-lg transition-colors"
               >
-                Find anything local
+                Search
               </Link>
             </div>
           </div>
@@ -95,11 +101,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
               </div>
               <div>
-                <div className="font-semibold text-white/70 text-sm mb-3">Company</div>
+                <div className="font-semibold text-white/70 text-sm mb-3">Businesses</div>
                 <div className="flex flex-col gap-1.5 text-sm text-white/40">
-                  <a href="/about" className="hover:text-white/70 transition-colors">About</a>
-                  <a href="/privacy" className="hover:text-white/70 transition-colors">Privacy</a>
-                  <a href="/terms" className="hover:text-white/70 transition-colors">Terms</a>
+                  <Link href="/for-businesses" className="hover:text-orange-400 text-orange-400/70 transition-colors font-medium">List your trade →</Link>
+                  <Link href="/for-businesses#register" className="hover:text-white/70 transition-colors">Register free</Link>
+                  <Link href="/for-businesses" className="hover:text-white/70 transition-colors">Pricing</Link>
+                  <a href="mailto:hello@anylocal.app" className="hover:text-white/70 transition-colors">Contact us</a>
                 </div>
               </div>
             </div>
