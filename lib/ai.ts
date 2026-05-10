@@ -2,12 +2,14 @@
  * lib/ai.ts — Universal AI client (canonical template)
  *
  * Fallback chain (free-first, paid last):
- *   1. Ollama   (local, 100% free) — gemma4 → qwen3.6 → llama3.2
- *   2. Groq     (cloud, free tier) — multi-key rotation
- *   3. Gemini   (cloud, free tier) — multi-key rotation
- *   4. Cerebras (cloud, free tier)
- *   5. OpenAI   (paid, but $5 free credit on new accounts)
- *   6. Anthropic/Claude (paid, last resort)
+ *   1. Ollama    (local, 100% free) — gemma4 → qwen3.6 → llama3.2
+ *   2. Groq      (cloud, free tier) — multi-key rotation
+ *   3. Gemini    (cloud, free tier) — multi-key rotation
+ *   4. Cerebras  (cloud, free tier)
+ *   5. NVidia    (cloud, free tier) — NIM inference, Llama/Phi/Qwen/Mistral
+ *   6. Kimi      (cloud, free tier) — Moonshot, best for long-context
+ *   7. OpenAI    (paid, but $5 free credit on new accounts)
+ *   8. Anthropic/Claude (paid, last resort)
  *
  * You always get a response — at least one provider will work at any time.
  *
@@ -30,6 +32,8 @@
  *   GROQ_API_KEY, GROQ_API_KEY_1, ...   (free at console.groq.com)
  *   GEMINI_API_KEY, GEMINI_API_KEY_1    (free at aistudio.google.com)
  *   CEREBRAS_API_KEY                    (free at cloud.cerebras.ai)
+ *   NVIDIA_API_KEY, NVIDIA_API_KEY_1, ...    (free at build.nvidia.com)
+ *   KIMI_API_KEY, KIMI_API_KEY_1, ...        (free at platform.moonshot.cn)
  */
 import config from '@/vertical.config'
 
@@ -67,6 +71,18 @@ const DEFAULT_CEREBRAS_TIERS: Record<Quality, string[]> = {
   best:     ['qwen-3-235b-a22b-instruct-2507', 'gpt-oss-120b'],
 }
 
+const DEFAULT_NVIDIA_TIERS: Record<Quality, string[]> = {
+  fast:     ['microsoft/phi-4-mini-instruct'],
+  balanced: ['qwen/qwen2.5-72b-instruct'],
+  best:     ['meta/llama-3.1-405b-instruct', 'mistralai/mistral-large-2-instruct'],
+}
+
+const DEFAULT_KIMI_TIERS: Record<Quality, string[]> = {
+  fast:     ['moonshot-v1-8k'],
+  balanced: ['moonshot-v1-32k'],
+  best:     ['moonshot-v1-128k'],
+}
+
 const DEFAULT_OPENAI_TIERS: Record<Quality, string[]> = {
   fast:     ['gpt-4o-mini'],
   balanced: ['gpt-4o-mini', 'gpt-4o'],
@@ -84,6 +100,8 @@ let _edgeConfig: {
   groq_tiers?: Record<Quality, string[]>
   gemini_tiers?: Record<Quality, string[]>
   cerebras_tiers?: Record<Quality, string[]>
+  nvidia_tiers?: Record<Quality, string[]>
+  kimi_tiers?: Record<Quality, string[]>
   claude_tiers?: Record<Quality, string>
 } | null = null
 
@@ -117,6 +135,8 @@ async function getTiers() {
     groq:     (ec?.groq_tiers     ?? DEFAULT_GROQ_TIERS)     as Record<Quality, string[]>,
     gemini:   (ec?.gemini_tiers   ?? DEFAULT_GEMINI_TIERS)   as Record<Quality, string[]>,
     cerebras: (ec?.cerebras_tiers ?? DEFAULT_CEREBRAS_TIERS) as Record<Quality, string[]>,
+    nvidia:   (ec?.nvidia_tiers   ?? DEFAULT_NVIDIA_TIERS)   as Record<Quality, string[]>,
+    kimi:     (ec?.kimi_tiers     ?? DEFAULT_KIMI_TIERS)     as Record<Quality, string[]>,
     openai:   DEFAULT_OPENAI_TIERS,
     claude:   (ec?.claude_tiers   ?? DEFAULT_CLAUDE_TIERS)   as Record<Quality, string>,
   }
@@ -284,6 +304,8 @@ export async function callAI(
     { name: 'groq',      fn: () => callProvider('https://api.groq.com/openai/v1',                          'Groq',     'GROQ',     tiers.groq[quality],     system, messages, maxTokens) },
     { name: 'gemini',    fn: () => callProvider('https://generativelanguage.googleapis.com/v1beta/openai', 'Gemini',   'GEMINI',   tiers.gemini[quality],   system, messages, maxTokens) },
     { name: 'cerebras',  fn: () => callProvider('https://api.cerebras.ai/v1',                              'Cerebras', 'CEREBRAS', tiers.cerebras[quality], system, messages, maxTokens) },
+    { name: 'nvidia',    fn: () => callProvider('https://integrate.api.nvidia.com/v1',                     'NVidia',   'NVIDIA',   tiers.nvidia[quality],   system, messages, maxTokens) },
+    { name: 'kimi',      fn: () => callProvider('https://api.moonshot.cn/v1',                              'Kimi',     'KIMI',     tiers.kimi[quality],     system, messages, maxTokens) },
     // ── Paid fallback (only hit if all free tiers are exhausted) ─────────────
     { name: 'openai',    fn: () => callProvider('https://api.openai.com/v1',                               'OpenAI',   'OPENAI',   tiers.openai[quality],   system, messages, maxTokens) },
     { name: 'anthropic', fn: () => callAnthropic(quality, system, messages, maxTokens) },
