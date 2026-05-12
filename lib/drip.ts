@@ -16,14 +16,17 @@ export const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND
 
 let _audienceId: string | null = process.env.RESEND_AUDIENCE_ID ?? process.env.RESEND_AUDIENCE_ID_ANYLOCAL ?? null
 
+/** Exported for use in cron route — may be null if env var not set */
+export const AUDIENCE_ID: string | null = _audienceId
+
 async function getAudienceId(): Promise<string | null> {
   if (_audienceId) return _audienceId
   if (!resend) return null
   try {
-    // @ts-expect-error Resend types incomplete
-    const res = await resend.audiences.list()
-    // @ts-expect-error Resend types incomplete
-    const first = res.data?.data?.[0] ?? res.data?.[0]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const res = await (resend.audiences as any).list()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const first = (res as any).data?.data?.[0] ?? (res as any).data?.[0]
     if (first?.id) {
       _audienceId = first.id
       console.log('[drip] auto-detected audience id:', _audienceId)
@@ -66,8 +69,8 @@ export async function listContacts(): Promise<Array<{ email: string; firstName: 
   const audienceId = await getAudienceId()
   if (!audienceId) return []
   const res = await resend.contacts.list({ audienceId })
-  // @ts-expect-error Resend types incomplete
-  return (res.data?.data ?? [])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return ((res as any).data?.data ?? [])
 }
 
 export const DRIP_EMAILS: Array<{
