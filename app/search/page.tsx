@@ -1,241 +1,42 @@
 'use client'
 import { useEffect, useState, useRef, Suspense, lazy } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Search, ArrowRight, Star, Phone, Globe, MapPin, Clock, ChevronDown, ChevronUp, List, Map, Mic, MicOff, MessageSquarePlus } from 'lucide-react'
+import { Search, Mic, MicOff } from 'lucide-react'
 import QuoteModal from '@/components/QuoteModal'
+import ResultCard, { PlaceResult } from '@/components/ResultCard'
 
 const MapView = lazy(() => import('@/components/MapView'))
-
-interface PlaceResult {
-  id:       string
-  name:     string
-  address:  string
-  rating:   number
-  reviews:  number
-  phone:    string | null
-  website:  string | null
-  open:     boolean | null
-  score:    number
-  lat:      number | null
-  lng:      number | null
-}
-
-interface PlaceDetail extends PlaceResult {
-  rawReviews: { rating: number; text: string; author: string; time: string }[]
-  aiSummary:  string | null
-}
-
-function StarRating({ rating, count }: { rating: number; count: number }) {
-  return (
-    <div className="flex items-center gap-1.5">
-      <div className="flex items-center gap-0.5">
-        {[1,2,3,4,5].map(i => (
-          <Star
-            key={i}
-            size={12}
-            className={i <= Math.round(rating) ? 'text-amber-400 fill-amber-400' : 'text-white/20'}
-          />
-        ))}
-      </div>
-      <span className="text-white/60 text-xs font-medium">{rating.toFixed(1)}</span>
-      <span className="text-white/30 text-xs">({count.toLocaleString()} reviews)</span>
-    </div>
-  )
-}
-
-function TrustBadge({ score }: { score: number }) {
-  const pct = Math.min(100, Math.round((score / 20) * 100))
-  const label = pct >= 80 ? 'Excellent' : pct >= 60 ? 'Good' : pct >= 40 ? 'Fair' : 'Limited data'
-  const color = pct >= 80 ? 'text-green-400 bg-green-400/10 border-green-400/20'
-              : pct >= 60 ? 'text-amber-400 bg-amber-400/10 border-amber-400/20'
-              : 'text-white/40 bg-white/[0.04] border-white/10'
-  return (
-    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${color}`}>
-      {label}
-    </span>
-  )
-}
-
-// Trade categories that make sense for quote requests (not restaurants/hotels)
-const QUOTE_TYPES = new Set(['plumber','electrician','builder','cleaner','hvac','mechanic','car-wash','painter','roofer','landscaper','locksmith','pest','removal'])
-
-function isTradePlace(place: PlaceResult): boolean {
-  // Heuristic: check if the place type or name implies a trade service
-  const n = place.name.toLowerCase()
-  return QUOTE_TYPES.has('plumber') || // always show for trade searches
-    /plumb|electr|builder|clean|hvac|heat|mechanic|roofing|landscap|locksmith|pest|removal|handyman|painter|decorator/.test(n)
-}
-
-function ResultCard({ place, rank, onRequestQuote }: { place: PlaceResult; rank: number; onRequestQuote: (p: PlaceResult) => void }) {
-  const [expanded, setExpanded] = useState(false)
-  const [detail, setDetail]     = useState<PlaceDetail | null>(null)
-  const [loading, setLoading]   = useState(false)
-
-  async function expand() {
-    if (expanded) { setExpanded(false); return }
-    setExpanded(true)
-    if (detail) return
-    setLoading(true)
-    try {
-      const res = await fetch(`/api/places/${place.id}`)
-      const d = await res.json()
-      setDetail(d)
-    } catch {}
-    setLoading(false)
-  }
-
-  return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden hover:border-orange-500/20 transition-all duration-200">
-      <div className="p-5">
-        <div className="flex items-start gap-4">
-          {/* Rank badge */}
-          <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold
-            ${rank === 1 ? 'bg-amber-500/20 text-amber-300' : rank === 2 ? 'bg-white/[0.08] text-white/60' : 'bg-white/[0.04] text-white/40'}`}>
-            #{rank}
-          </div>
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-3 flex-wrap">
-              <div>
-                <h3 className="font-bold text-white text-base leading-snug">{place.name}</h3>
-                <div className="flex items-center gap-1.5 mt-1 text-white/40 text-xs">
-                  <MapPin size={11} />
-                  <span className="truncate max-w-xs">{place.address}</span>
-                </div>
-              </div>
-              <TrustBadge score={place.score} />
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 mt-3">
-              {place.rating > 0 && <StarRating rating={place.rating} count={place.reviews} />}
-              {place.open === true && (
-                <span className="text-xs text-green-400 flex items-center gap-1">
-                  <Clock size={11} /> Open now
-                </span>
-              )}
-              {place.open === false && (
-                <span className="text-xs text-red-400/70 flex items-center gap-1">
-                  <Clock size={11} /> Closed
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2 mt-4">
-              {place.phone && (
-                <a
-                  href={`tel:${place.phone}`}
-                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-orange-500/15 border border-orange-500/25 text-orange-300 hover:bg-orange-500/25 transition-colors"
-                >
-                  <Phone size={12} /> {place.phone}
-                </a>
-              )}
-              {place.website && (
-                <a
-                  href={place.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-white/[0.06] border border-white/[0.10] text-white/60 hover:text-white/80 transition-colors"
-                >
-                  <Globe size={12} /> Website
-                </a>
-              )}
-              {place.reviews > 0 && (
-                <button
-                  onClick={expand}
-                  className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white/50 hover:text-white/70 transition-colors"
-                >
-                  {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-                  AI review summary
-                </button>
-              )}
-              <button
-                onClick={() => onRequestQuote(place)}
-                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-orange-500/20 border border-orange-500/35 text-orange-300 hover:bg-orange-500/30 font-semibold transition-colors"
-              >
-                <MessageSquarePlus size={12} /> Get quote
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Expanded: AI summary + reviews */}
-      {expanded && (
-        <div className="border-t border-white/[0.06] px-5 py-4 bg-white/[0.02]">
-          {loading && (
-            <div className="flex items-center gap-2 text-white/40 text-sm">
-              <div className="w-3 h-3 rounded-full border border-orange-500/60 border-t-transparent animate-spin" />
-              Loading AI review analysis...
-            </div>
-          )}
-          {detail && (
-            <div className="space-y-4">
-              {detail.aiSummary && (
-                <div>
-                  <div className="text-xs font-semibold text-orange-400 mb-2 flex items-center gap-1.5">
-                    🤖 AI summary
-                  </div>
-                  <p className="text-white/70 text-sm leading-relaxed">{detail.aiSummary}</p>
-                </div>
-              )}
-              {detail.rawReviews.length > 0 && (
-                <div>
-                  <div className="text-xs font-semibold text-white/40 mb-2">Customer reviews</div>
-                  <div className="space-y-2">
-                    {detail.rawReviews.slice(0, 3).map((r, i) => (
-                      <div key={i} className="text-xs text-white/50 bg-white/[0.03] rounded-lg px-3 py-2">
-                        <div className="flex items-center gap-2 mb-1">
-                          <div className="flex gap-0.5">
-                            {[1,2,3,4,5].map(s => (
-                              <Star key={s} size={9} className={s <= r.rating ? 'text-amber-400 fill-amber-400' : 'text-white/20'} />
-                            ))}
-                          </div>
-                          <span className="font-medium text-white/60">{r.author}</span>
-                          <span className="text-white/30">{r.time}</span>
-                        </div>
-                        <p className="leading-snug line-clamp-3">{r.text}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
 
 function SearchPageInner() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const initialQuery = searchParams.get('q') ?? ''
-  // GPS coords passed from homepage "near me" / category clicks
   const urlLat = parseFloat(searchParams.get('lat') ?? '')
   const urlLng = parseFloat(searchParams.get('lng') ?? '')
   const urlHasGps = !isNaN(urlLat) && !isNaN(urlLng)
 
-  const [query, setQuery]     = useState(initialQuery)
-  const [results, setResults] = useState<PlaceResult[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError]     = useState<string | null>(null)
-  const [searched, setSearched] = useState(initialQuery)
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
+  const [query, setQuery]           = useState(initialQuery)
+  const [results, setResults]       = useState<PlaceResult[]>([])
+  const [loading, setLoading]       = useState(false)
+  const [error, setError]           = useState<string | null>(null)
+  const [searched, setSearched]     = useState(initialQuery)
   const [locationLabel, setLocationLabel] = useState<string | null>(null)
-  const [openNowOnly, setOpenNowOnly] = useState(false)
+  const [openNowOnly, setOpenNowOnly]     = useState(searchParams.get('openNow') === '1')
+  const [minRating, setMinRating]         = useState<number>(parseFloat(searchParams.get('minRating') ?? '0') || 0)
+  const [sortBy, setSortBy]               = useState<'relevance' | 'distance' | 'rating'>(
+    (searchParams.get('sort') as 'relevance' | 'distance' | 'rating') ?? 'relevance'
+  )
+  const [activeId, setActiveId]           = useState<string | null>(null)
   const [showQuoteModal, setShowQuoteModal] = useState(false)
-  const [quoteTarget, setQuoteTarget] = useState<PlaceResult | null>(null) // null = top-3 mode, set = single business
-  const [listening, setListening] = useState(false)
+  const [quoteTarget, setQuoteTarget]       = useState<PlaceResult | null>(null)
+  const [listening, setListening]           = useState(false)
   const recognitionRef = useRef<any>(null)
   const didSearch = useRef(false)
-  // Seed cachedCoords from URL params if homepage already got GPS
   const cachedCoords = useRef<{ lat: number; lng: number; city: string | null } | null>(
     urlHasGps ? { lat: urlLat, lng: urlLng, city: null } : null
   )
-  const coordsReady  = useRef<Promise<void> | null>(null)
+  const coordsReady = useRef<Promise<void> | null>(null)
 
-  // Kick off geolocation immediately on mount — cache result for doSearch
   useEffect(() => {
     coordsReady.current = new Promise(resolve => {
       if (!navigator.geolocation) return resolve()
@@ -262,15 +63,10 @@ function SearchPageInner() {
   }, [])
 
   function startVoice() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const SpeechRecognition = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition
     if (!SpeechRecognition) { alert('Voice not supported in this browser'); return }
-
     const rec = new SpeechRecognition()
-    rec.lang = 'en-GB'
-    rec.continuous = false
-    rec.interimResults = false
-
+    rec.lang = 'en-GB'; rec.continuous = false; rec.interimResults = false
     rec.onstart  = () => setListening(true)
     rec.onend    = () => setListening(false)
     rec.onerror  = () => setListening(false)
@@ -279,17 +75,11 @@ function SearchPageInner() {
       setQuery(transcript)
       doSearch(transcript)
     }
-
-    recognitionRef.current = rec
-    rec.start()
+    recognitionRef.current = rec; rec.start()
   }
 
-  function stopVoice() {
-    recognitionRef.current?.stop()
-    setListening(false)
-  }
+  function stopVoice() { recognitionRef.current?.stop(); setListening(false) }
 
-  // Heuristic: query already mentions a location if it contains "in", "near", "at" + a word
   function hasLocation(q: string): boolean {
     return /\b(in|near|at|around)\s+\w/i.test(q)
   }
@@ -297,31 +87,25 @@ function SearchPageInner() {
   async function doSearch(q: string) {
     if (!q.trim()) return
     const finalQ = q.trim()
+    setLoading(true); setError(null); setResults([]); setActiveId(null)
+    setSearched(finalQ)
 
     let coords: { lat: number; lng: number } | null = null
-
-    // Wait for cached geolocation (already requested on mount)
     if (!hasLocation(finalQ)) {
       if (coordsReady.current) await coordsReady.current
       const detected = cachedCoords.current
       if (detected) {
         coords = { lat: detected.lat, lng: detected.lng }
         setLocationLabel(detected.city)
-      } else {
-        setLocationLabel(null)
       }
     } else {
       setLocationLabel(null)
     }
 
-    setLoading(true)
-    setError(null)
-    setResults([])
-    setSearched(finalQ)
-    router.replace(`/search?q=${encodeURIComponent(q.trim())}`, { scroll: false })
+    router.replace(`/search?q=${encodeURIComponent(finalQ)}`, { scroll: false })
 
     try {
-      const res  = await fetch('/api/places', {
+      const res = await fetch('/api/places', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: finalQ, ...(coords ?? {}) }),
@@ -341,158 +125,171 @@ function SearchPageInner() {
       didSearch.current = true
       doSearch(initialQuery)
     }
-  }, [initialQuery])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Sync filters to URL
+  useEffect(() => {
+    const p = new URLSearchParams(searchParams.toString())
+    openNowOnly ? p.set('openNow', '1') : p.delete('openNow')
+    minRating > 0 ? p.set('minRating', String(minRating)) : p.delete('minRating')
+    sortBy !== 'relevance' ? p.set('sort', sortBy) : p.delete('sort')
+    router.replace(`?${p.toString()}`, { scroll: false })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openNowOnly, minRating, sortBy])
+
+  const userLat = cachedCoords.current?.lat ?? null
+  const userLng = cachedCoords.current?.lng ?? null
+
+  function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number) {
+    const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLng = (lng2-lng1)*Math.PI/180
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+  }
+
+  const filteredResults = results
+    .filter(r => !openNowOnly || r.open === true)
+    .filter(r => minRating === 0 || r.rating >= minRating)
+    .sort((a, b) => {
+      if (sortBy === 'rating') return b.rating - a.rating
+      if (sortBy === 'distance' && userLat !== null && userLng !== null) {
+        const dA = (a.lat && a.lng) ? haversineKm(userLat, userLng, a.lat, a.lng) : 999
+        const dB = (b.lat && b.lng) ? haversineKm(userLat, userLng, b.lat, b.lng) : 999
+        return dA - dB
+      }
+      return b.score - a.score
+    })
+
+  function cycleRating() {
+    setMinRating(prev => prev === 0 ? 4.0 : prev === 4.0 ? 4.5 : 0)
+  }
+
+  const ratingLabel = minRating === 4.5 ? '⭐ 4.5+' : minRating === 4.0 ? '⭐ 4.0+' : '⭐ Rating'
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-10">
-
-      {/* Search bar */}
-      <div className={`flex items-center gap-3 bg-white/[0.06] border rounded-2xl px-5 py-4 mb-8 transition-colors ${listening ? 'border-red-500/60 bg-red-500/[0.04]' : 'border-white/[0.12] focus-within:border-orange-500/50'}`}>
-        <Search size={20} className="text-white/40 flex-shrink-0" />
-        <input
-          type="text"
-          value={listening ? '🎤 Listening…' : query}
-          onChange={e => setQuery(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && doSearch(query)}
-          placeholder='e.g. "plumber nearby" or "dentist in Manchester"'
-          className="flex-1 bg-transparent text-white placeholder:text-white/30 outline-none text-base"
-          readOnly={listening}
-          autoFocus
-        />
-        {/* Mic button */}
-        <button
-          onClick={listening ? stopVoice : startVoice}
-          title={listening ? 'Stop listening' : 'Search by voice'}
-          className={`flex-shrink-0 p-2 rounded-xl transition-all duration-200 ${listening ? 'bg-red-500/25 text-red-400 animate-pulse' : 'bg-white/[0.06] text-white/40 hover:text-white/70 hover:bg-white/[0.10]'}`}
-        >
-          {listening ? <MicOff size={18} /> : <Mic size={18} />}
-        </button>
-        <button
-          onClick={() => doSearch(query)}
-          disabled={loading || listening}
-          className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-700 hover:to-orange-500 transition-all duration-200 disabled:opacity-50"
-        >
-          {loading ? 'Searching...' : 'Search'} <ArrowRight size={16} />
-        </button>
-      </div>
-
-      {/* Loading */}
-      {loading && (
-        <div className="flex flex-col items-center gap-4 py-20 text-white/50">
-          <div className="w-8 h-8 rounded-full border-2 border-orange-500/60 border-t-transparent animate-spin" />
-          <p className="text-sm">Searching Google Places for &ldquo;{searched}&rdquo;…</p>
-        </div>
-      )}
-
-      {/* Error */}
-      {error && !loading && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 text-red-300 text-sm">
-          {error}
-        </div>
-      )}
-
-      {/* Results */}
-      {!loading && results.length > 0 && (
-        <>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-white/50 text-sm flex items-center gap-2 flex-wrap">
-              {results.length} result{results.length !== 1 ? 's' : ''} for <span className="text-white/80">&ldquo;{searched}&rdquo;</span>
-              {locationLabel && (
-                <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-orange-500/15 border border-orange-500/25 text-orange-300">
-                  <MapPin size={10} /> Auto-detected: {locationLabel}
-                </span>
-              )}
-            </p>
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Open now toggle */}
-              <button
-                onClick={() => setOpenNowOnly(v => !v)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${openNowOnly ? 'bg-green-500/20 border-green-500/30 text-green-300' : 'bg-white/[0.04] border-white/[0.08] text-white/40 hover:text-white/60'}`}
-              >
-                <Clock size={12} /> Open now
-              </button>
-              {/* Get quotes CTA */}
-              <button
-                onClick={() => setShowQuoteModal(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border bg-orange-500/20 border-orange-500/30 text-orange-300 hover:bg-orange-500/30 transition-all"
-              >
-                <MessageSquarePlus size={12} /> Get free quotes
-              </button>
-              {/* List/Map toggle */}
-              <div className="flex items-center gap-1 bg-white/[0.06] border border-white/[0.10] rounded-lg p-1">
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${viewMode === 'list' ? 'bg-orange-500/25 text-orange-300' : 'text-white/40 hover:text-white/60'}`}
-                >
-                  <List size={13} /> List
-                </button>
-                <button
-                  onClick={() => setViewMode('map')}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${viewMode === 'map' ? 'bg-orange-500/25 text-orange-300' : 'text-white/40 hover:text-white/60'}`}
-                >
-                  <Map size={13} /> Map
-                </button>
-              </div>
+    <div className="min-h-screen bg-[#080712] flex flex-col">
+      {/* Sticky search bar */}
+      <div className="sticky top-0 z-30 bg-[#080712]/90 backdrop-blur-xl border-b border-white/[0.06] px-4 py-3">
+        <div className="max-w-[1400px] mx-auto space-y-3">
+          {/* Search input row */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+              <input
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && doSearch(query)}
+                placeholder="Search tradespeople, services..."
+                className="w-full bg-white/[0.06] border border-white/[0.10] rounded-xl pl-9 pr-4 py-2.5 text-white placeholder-white/30 text-sm focus:outline-none focus:border-orange-500/40"
+              />
             </div>
+            <button
+              onClick={listening ? stopVoice : startVoice}
+              className={`p-2.5 rounded-xl border transition-colors ${listening ? 'bg-red-500/20 border-red-500/40 text-red-400' : 'bg-white/[0.06] border-white/[0.10] text-white/50 hover:text-white/70'}`}
+            >
+              {listening ? <MicOff size={16} /> : <Mic size={16} />}
+            </button>
+            <button
+              onClick={() => doSearch(query)}
+              disabled={loading}
+              className="px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50"
+            >
+              {loading ? '...' : 'Search'}
+            </button>
           </div>
 
-          {(() => {
-            const filtered = openNowOnly ? results.filter(r => r.open === true) : results
-            return viewMode === 'list' ? (
-              filtered.length > 0 ? (
-                <div className="space-y-4">
-                  {filtered.map((place, i) => (
-                    <ResultCard key={place.id} place={place} rank={i + 1} onRequestQuote={(p) => { setQuoteTarget(p); setShowQuoteModal(true) }} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-white/40 text-sm">
-                  No open businesses found right now. <button className="text-orange-400 underline" onClick={() => setOpenNowOnly(false)}>Show all</button>
-                </div>
-              )
-            ) : (
-              <Suspense fallback={<div className="h-96 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-white/40 text-sm">Loading map…</div>}>
-                <MapView results={filtered} />
-              </Suspense>
-            )
-          })()}
-
-          <p className="text-center text-white/25 text-xs mt-8">
-            Results from Google Places API · AI review analysis by AnyLocal
-          </p>
-        </>
-      )}
-
-      {/* Empty state */}
-      {!loading && !error && results.length === 0 && searched && (
-        <div className="text-center py-20 text-white/40">
-          <div className="text-4xl mb-4">🔍</div>
-          <p className="text-base mb-1">No results found for &ldquo;{searched}&rdquo;</p>
-          <p className="text-sm">Try adding a city name or being more specific</p>
+          {/* Filter pills */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => setOpenNowOnly(p => !p)}
+              className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${openNowOnly ? 'bg-green-500/20 border-green-500/40 text-green-300' : 'bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white/70'}`}
+            >
+              Open now
+            </button>
+            <button
+              onClick={cycleRating}
+              className={`text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${minRating > 0 ? 'bg-amber-500/20 border-amber-500/40 text-amber-300' : 'bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white/70'}`}
+            >
+              {ratingLabel}
+            </button>
+            <select
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value as 'relevance' | 'distance' | 'rating')}
+              className="text-xs px-3 py-1.5 rounded-full border bg-white/[0.04] border-white/[0.08] text-white/50 focus:outline-none focus:border-orange-500/30"
+            >
+              <option value="relevance">Sort: Relevance</option>
+              <option value="distance">Sort: Distance</option>
+              <option value="rating">Sort: Rating</option>
+            </select>
+            {filteredResults.length > 0 && (
+              <span className="text-xs text-white/30 ml-auto">
+                {filteredResults.length} result{filteredResults.length !== 1 ? 's' : ''}
+                {locationLabel ? ` near ${locationLabel}` : ''}
+              </span>
+            )}
+          </div>
         </div>
-      )}
+      </div>
 
-      {/* Prompt if no search yet */}
-      {!loading && !error && !searched && (
-        <div className="text-center py-20 text-white/40">
-          <div className="text-4xl mb-4">🔧</div>
-          <p className="text-sm">Enter a trade and location above to get started</p>
+      {/* Split pane body */}
+      <div className="flex-1 flex max-w-[1400px] mx-auto w-full">
+        {/* Left: results list */}
+        <div className="w-full md:w-[420px] flex-shrink-0 overflow-y-auto px-4 py-4 space-y-3 md:h-[calc(100vh-120px)] md:sticky md:top-[120px]">
+          {loading && (
+            <div className="flex items-center gap-3 text-white/40 text-sm py-8 justify-center">
+              <div className="w-4 h-4 rounded-full border-2 border-orange-500/60 border-t-transparent animate-spin" />
+              Searching...
+            </div>
+          )}
+          {error && (
+            <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl p-4">{error}</div>
+          )}
+          {!loading && filteredResults.length === 0 && searched && !error && (
+            <div className="text-white/40 text-sm py-8 text-center">No results for &ldquo;{searched}&rdquo;</div>
+          )}
+          {!loading && !searched && (
+            <div className="text-white/30 text-sm py-12 text-center">
+              <div className="text-3xl mb-3">🔧</div>
+              Enter a trade and location above to get started
+            </div>
+          )}
+          {filteredResults.map((place, i) => (
+            <ResultCard
+              key={place.id}
+              place={place}
+              rank={i + 1}
+              userLat={userLat}
+              userLng={userLng}
+              active={activeId === place.id}
+              onRequestQuote={p => { setQuoteTarget(p); setShowQuoteModal(true) }}
+              onActivate={id => setActiveId(prev => prev === id ? null : id)}
+            />
+          ))}
         </div>
-      )}
 
-      {/* Quote modal — single business (from card button) or top-3 (from filter bar) */}
+        {/* Right: sticky map */}
+        <div className="hidden md:block flex-1 sticky top-[120px] h-[calc(100vh-120px)] p-4">
+          <Suspense fallback={<div className="h-full rounded-2xl bg-white/[0.03] border border-white/[0.06]" />}>
+            <MapView
+              results={filteredResults}
+              activeId={activeId}
+              onPinClick={id => setActiveId(prev => prev === id ? null : id)}
+            />
+          </Suspense>
+        </div>
+      </div>
+
       {showQuoteModal && results.length > 0 && (
         <QuoteModal
           businesses={
             quoteTarget
               ? [{ id: quoteTarget.id, name: quoteTarget.name, phone: quoteTarget.phone }]
-              : results.slice(0, 3).map(r => ({ id: r.id, name: r.name, phone: r.phone }))
+              : filteredResults.slice(0, 3).map(r => ({ id: r.id, name: r.name, phone: r.phone }))
           }
           searchQuery={searched}
           onClose={() => { setShowQuoteModal(false); setQuoteTarget(null) }}
         />
       )}
-
     </div>
   )
 }
