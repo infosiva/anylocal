@@ -162,11 +162,34 @@ export default function HomePage() {
         </div>
 
         {/* Trust pills */}
-        <div className="flex flex-wrap items-center justify-center gap-5 text-sm text-white/35">
+        <div className="flex flex-wrap items-center justify-center gap-5 text-sm text-white/35 mb-8">
           <span className="flex items-center gap-1.5"><Shield size={13} className="text-orange-400/70" /> Real Google reviews</span>
           <span className="flex items-center gap-1.5"><Star size={13} className="text-orange-400/70" /> Honest AI analysis</span>
           <span className="flex items-center gap-1.5"><Phone size={13} className="text-orange-400/70" /> Direct contact — no fees</span>
           <span className="flex items-center gap-1.5"><MapPin size={13} className="text-orange-400/70" /> Works worldwide</span>
+        </div>
+
+        {/* ── Instant Quote CTA — like Bark.com ── */}
+        <div className="max-w-xl mx-auto bg-white/[0.04] border border-orange-500/25 rounded-2xl p-5 text-left">
+          <div className="flex items-center gap-2 mb-3">
+            <Clock size={14} className="text-orange-400" />
+            <span className="text-orange-300 text-xs font-bold uppercase tracking-widest">Get quotes in 2 hours</span>
+            <span className="ml-auto text-[10px] text-green-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse inline-block"/> Tradespeople online now
+            </span>
+          </div>
+          <form onSubmit={e => { e.preventDefault(); const f = e.currentTarget; const job = (f.elements.namedItem('job') as HTMLInputElement).value; const loc = (f.elements.namedItem('loc') as HTMLInputElement).value; if (job && loc) handleSearch(`${job} in ${loc}`) }} className="flex flex-col gap-2.5">
+            <input name="job" required placeholder="What do you need? e.g. boiler repair, bathroom tiles..."
+              className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-orange-500/50 transition" />
+            <input name="loc" required placeholder="Your postcode or city"
+              className="w-full bg-white/[0.06] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-orange-500/50 transition" />
+            <button type="submit"
+              className="w-full py-2.5 rounded-xl text-sm font-bold text-white transition-all"
+              style={{ background: 'linear-gradient(135deg, #f97316, #d97706)' }}>
+              Get Free Quotes →
+            </button>
+          </form>
+          <p className="text-white/25 text-[10px] mt-2 text-center">Free · No obligation · Up to 5 quotes from local tradespeople</p>
         </div>
       </section>
 
