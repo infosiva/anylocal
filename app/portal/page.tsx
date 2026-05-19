@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 
 interface Business {
@@ -43,7 +43,7 @@ function timeAgo(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
 
-export default function Portal() {
+function PortalInner() {
   const params    = useSearchParams()
   const router    = useRouter()
   const [email, setEmail]   = useState(params.get('email') ?? '')
@@ -170,6 +170,14 @@ export default function Portal() {
         </section>
       )}
     </div>
+  )
+}
+
+export default function Portal() {
+  return (
+    <Suspense fallback={<div className="max-w-3xl mx-auto px-4 py-12 text-white/40">Loading…</div>}>
+      <PortalInner />
+    </Suspense>
   )
 }
 
