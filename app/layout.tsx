@@ -60,8 +60,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         `}</style>
         <div style={meshStyle} />
 
-        <div style={{ position:"fixed", top:"10px", right:"16px", zIndex:60 }}><AuthButton /></div>
-
         {/* Navbar */}
         <nav className="sticky top-0 z-50 border-b border-white/[0.06] bg-black/20 backdrop-blur-md">
           <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
@@ -88,6 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               >
                 Search
               </Link>
+              <AuthButton />
             </div>
           </div>
         </nav>
