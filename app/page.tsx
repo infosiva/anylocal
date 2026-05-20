@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -25,9 +25,9 @@ const T = {
 }
 
 const STATS = [
-  { label: 'Businesses listed',  value: '2.4M+',  icon: <MapPin  size={13} /> },
-  { label: 'Reviews analysed',   value: '180M+', icon: <Star    size={13} /> },
-  { label: 'Searches this week', value: '94k',   icon: <TrendingUp size={13} /> },
+  { label: 'AI-reviewed listings',  value: 'Daily',  icon: <MapPin  size={13} /> },
+  { label: 'Trusted search',   value: 'Global', icon: <Star    size={13} /> },
+  { label: 'Zero fake reviews', value: 'Always',   icon: <TrendingUp size={13} /> },
 ]
 
 const HOW = [
@@ -175,6 +175,8 @@ function FloatingChat() {
 
 // ── Main ─────────────────────────────────────────────────
 export default function HomePage() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   const router      = useRouter()
   const [query, setQ]     = useState('')
   const [listening, setL] = useState(false)
@@ -238,7 +240,7 @@ export default function HomePage() {
 
           {/* Badge */}
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={mounted ? { opacity: 0, y: 12 } : false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45 }}
             style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}
@@ -251,7 +253,7 @@ export default function HomePage() {
 
           {/* Headline */}
           <motion.h1
-            initial={{ opacity: 0, y: 16 }}
+            initial={mounted ? { opacity: 0, y: 16 } : false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.05 }}
             style={{ fontFamily: 'var(--font-display, system-ui)', fontWeight: 900, lineHeight: 1.03, letterSpacing: '-0.035em', color: T.text, margin: '0 0 16px', fontSize: 'clamp(32px, 6vw, 54px)' }}
@@ -265,7 +267,7 @@ export default function HomePage() {
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 12 }}
+            initial={mounted ? { opacity: 0, y: 12 } : false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             style={{ fontSize: 'clamp(13px, 2vw, 15px)', color: T.sub, lineHeight: 1.65, margin: '0 0 24px', maxWidth: 500 }}
@@ -275,7 +277,7 @@ export default function HomePage() {
 
           {/* Search bar */}
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={mounted ? { opacity: 0, y: 12 } : false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
             className="search-bar"
@@ -320,7 +322,7 @@ export default function HomePage() {
 
           {/* Mobile category chips — horizontal scroll */}
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={mounted ? { opacity: 0 } : false}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 6, scrollbarWidth: 'none', marginBottom: 32 }}
@@ -370,7 +372,7 @@ export default function HomePage() {
 
         {/* ── HOW IT WORKS ─────────────────────────────────── */}
         <motion.section
-          initial={{ opacity: 0, y: 20 }}
+          initial={mounted ? { opacity: 0, y: 20 } : false}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
@@ -385,7 +387,7 @@ export default function HomePage() {
             {HOW.map((s, i) => (
               <motion.div
                 key={s.n}
-                initial={{ opacity: 0, y: 16 }}
+                initial={mounted ? { opacity: 0, y: 16 } : false}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
                 viewport={{ once: true }}
@@ -402,7 +404,7 @@ export default function HomePage() {
 
         {/* ── POPULAR CATEGORIES ────────────────────────────── */}
         <motion.section
-          initial={{ opacity: 0, y: 20 }}
+          initial={mounted ? { opacity: 0, y: 20 } : false}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
@@ -438,7 +440,7 @@ export default function HomePage() {
 
         {/* ── CTA PAIR ─────────────────────────────────────── */}
         <motion.section
-          initial={{ opacity: 0, y: 20 }}
+          initial={mounted ? { opacity: 0, y: 20 } : false}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}

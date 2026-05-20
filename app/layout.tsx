@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title:       'AnyLocal — Find Anything Near You, Anywhere in the World',
   description: 'AI-powered local search. Find restaurants, hotels, plumbers, dentists and more — ranked by honest AI review analysis, not just star ratings.',
   keywords:    ['find local', 'near me', 'restaurant finder', 'plumber near me', 'local business', 'AI reviews'],
+  metadataBase: new URL('https://anylocal.app'),
 }
 
 const themeColor = 'orange'
