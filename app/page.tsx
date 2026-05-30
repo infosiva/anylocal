@@ -299,7 +299,7 @@ export default function HomePage() {
               value={listening ? '🎤 Listening…' : query}
               onChange={e => setQ(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && go()}
-              placeholder='"plumber nearby" or "best Thai in Leeds"'
+              placeholder='I need a plumber this weekend under £80…'
               readOnly={listening}
               autoFocus
               style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: 14, color: T.text, minWidth: 0, padding: '10px 0', letterSpacing: '-0.01em' }}
@@ -319,6 +319,16 @@ export default function HomePage() {
               Find <ArrowRight size={13} />
             </button>
           </motion.div>
+
+          {/* Search hint */}
+          <motion.p
+            initial={mounted ? { opacity: 0 } : false}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.18 }}
+            style={{ fontSize: 11, color: T.muted, marginBottom: 14, marginTop: -8 }}
+          >
+            Try: &quot;electrician near me today&quot;
+          </motion.p>
 
           {/* Mobile category chips — horizontal scroll */}
           <motion.div

@@ -12,16 +12,17 @@ export interface AnyLocalConfig {
 const config: AnyLocalConfig = {
   id: 'anylocal',
   name: 'AnyLocal',
-  tagline: 'Find anything local, anywhere — AI-ranked by real reviews',
+  tagline: 'Tell us what you need — we find, vet, and book the right local business in seconds.',
   domain: 'anylocal.app',
   themeColor: 'orange',
-  metaTitle: 'AnyLocal — Find Anything Near You, Anywhere in the World',
-  metaDescription: 'AI-powered local search. Find restaurants, hotels, plumbers, dentists and more — ranked by honest AI review analysis, not just star ratings.',
+  metaTitle: 'AnyLocal — Find Trusted Local Businesses, AI-Ranked Worldwide',
+  metaDescription: 'AI reads real reviews so you do not have to — honest summaries of quality, value, and reliability. No commission, no hidden fees. Find plumbers, restaurants, dentists and more worldwide.',
   keywords: ['find local', 'near me', 'restaurant finder', 'plumber near me', 'local business', 'AI reviews', 'best local'],
-  aiSystemPrompt: `You are a helpful assistant for AnyLocal, a platform that helps people find trusted local businesses anywhere in the world.
+  aiSystemPrompt: `You are LocalBot, the AI assistant for AnyLocal — a platform that helps people find trusted local businesses anywhere in the world, with no commission and no hidden fees.
 When users ask to find a place or service, extract the business type and location from their message.
-When you have results, give an honest AI summary of what the reviews say — quality, service, value, reliability, atmosphere.
-Be concise and direct. Mention both positives and negatives if present. Always suggest calling or visiting directly.`,
+Give an honest AI summary of what real reviews say — quality, service, value, reliability, atmosphere. Mention positives and negatives.
+Key differentiator to mention if relevant: AnyLocal has no commission (unlike Taskrabbit 15-30%), global coverage (unlike Checkatrade UK-only), and AI review analysis (unlike Bark which just sends leads).
+Be concise and direct. Always suggest calling or visiting the business directly to confirm availability.`,
   categories: [
     // Food & Drink
     { id: 'restaurant',   label: 'Restaurants',    icon: '🍽️', synonyms: ['food','dining','eat','cuisine','takeaway'] },
