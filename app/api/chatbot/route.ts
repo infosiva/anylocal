@@ -1,7 +1,8 @@
 import Groq from 'groq-sdk'
 import { NextRequest, NextResponse } from 'next/server'
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
+let _groq: Groq | null = null
+function getGroq() { if (!_groq) _groq = new Groq({ apiKey: process.env.GROQ_API_KEY! }); return _groq }
 
 export const runtime = 'nodejs'
 
@@ -29,7 +30,7 @@ Keep responses short, helpful, and location-aware. Use a friendly, practical ton
       ...messages.map((m: Message) => ({ role: m.role, content: m.content })),
     ]
 
-    const stream = await groq.chat.completions.create({
+    const stream = await getGroq().chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: chatMessages,
       max_tokens: 600,
