@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <head>
-        <meta name="google-adsense-account" content="ca-pub-REPLACE_WITH_PUBLISHER_ID" />
+        <meta name="google-adsense-account" content="ca-pub-4237294630161176" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body className={`${inter.variable} ${jakartaSans.variable} min-h-full flex flex-col`}
