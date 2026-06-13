@@ -5,7 +5,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 // LocalBot — orange theme, bottom-right, local search assistant
 const ACCENT = '#f97316'
 const BOT_NAME = 'LocalBot'
-const WELCOME = '📍 Hey! I\'m LocalBot — your local search and booking assistant. I can help you find tradespeople, track your quote requests, or arrange a booking. What do you need?'
+const WELCOME = "I'm LocalBot. Tell me what you need and where you are — I'll find trusted local businesses and tell you what their reviews actually say. What are you looking for?"
 const SYSTEM_PROMPT = `You are LocalBot, the AI assistant for AnyLocal — an AI-powered local business search platform.
 
 You help customers with:
@@ -115,8 +115,10 @@ export default function ChatBot() {
           boxShadow: '0 4px 20px rgba(249,115,22,0.45)',
           transition: 'transform 0.2s, box-shadow 0.2s',
         }}
-        onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
+        onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.08)')}
         onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+        onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.97)')}
+        onMouseUp={e => (e.currentTarget.style.transform = 'scale(1.08)')}
       >
         {open ? (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
@@ -142,8 +144,8 @@ export default function ChatBot() {
         }}>
           <style>{`
             @keyframes local-slide-up {
-              from { opacity: 0; transform: translateY(16px); }
-              to   { opacity: 1; transform: translateY(0); }
+              from { opacity: 0; transform: translateY(12px) scale(0.97); }
+              to   { opacity: 1; transform: translateY(0) scale(1); }
             }
             .local-msg::-webkit-scrollbar { width: 4px; }
             .local-msg::-webkit-scrollbar-track { background: transparent; }
