@@ -18,11 +18,36 @@ export const metadata: Metadata = {
   description: 'AI-powered local search. Find restaurants, hotels, plumbers, dentists and more — ranked by honest AI review analysis, not just star ratings.',
   keywords:    ['find local', 'near me', 'restaurant finder', 'plumber near me', 'local business', 'AI reviews'],
   metadataBase: new URL('https://anylocal.app'),
+  openGraph: {
+    title: 'AnyLocal — Find Anything Near You, Anywhere in the World',
+    description: 'AI-powered local search. Find restaurants, hotels, plumbers, dentists and more — ranked by honest AI review analysis, not just star ratings.',
+    type: 'website',
+    images: [{ url: '/og.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AnyLocal — Find Anything Near You, Anywhere in the World',
+    description: 'AI-powered local search. Find restaurants, hotels, plumbers, dentists and more — ranked by honest AI review analysis, not just star ratings.',
+    images: ['/og.png'],
+  },
 }
 
-const themeColor = 'orange'
+const themeColor = 'teal'
 const colors     = COLOR_MAP[themeColor]
 const meshStyle  = getMeshStyle(themeColor)
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'AnyLocal',
+  url: 'https://anylocal.app',
+  description: 'AI-powered local search. Find restaurants, hotels, plumbers, dentists and more — ranked by honest AI review analysis, not just star ratings.',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: 'https://anylocal.app/search?q={search_term_string}',
+    'query-input': 'required name=search_term_string',
+  },
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -37,8 +62,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       } as React.CSSProperties}
       suppressHydrationWarning
     >
-      <body className={`${inter.variable} ${jakartaSans.variable} min-h-full flex flex-col text-white`}
-        style={{ background: colors.base, fontFamily: 'var(--font-body, system-ui)', overflowX: 'hidden' }}
+      <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      </head>
+      <body className={`${inter.variable} ${jakartaSans.variable} min-h-full flex flex-col`}
+        style={{ background: '#fffbf5', color: '#1a1a1a', fontFamily: 'var(--font-body, system-ui)', overflowX: 'hidden' }}
       >
         <style>{`
           *, *::before, *::after { box-sizing: border-box; }
@@ -51,9 +79,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           .cat-scroll::-webkit-scrollbar { display: none; }
           /* Stronger card lift */
           .local-card { transition: all 180ms cubic-bezier(0.23,1,0.32,1); }
-          .local-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.5); border-color: rgba(249,115,22,0.4) !important; }
+          .local-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); border-color: rgba(13,148,136,0.35) !important; }
           /* Search bar pulse on focus */
-          .search-bar:focus-within { border-color: rgba(249,115,22,0.5) !important; box-shadow: 0 0 0 3px rgba(249,115,22,0.1) !important; }
+          .search-bar:focus-within { border-color: rgba(13,148,136,0.45) !important; box-shadow: 0 0 0 3px rgba(13,148,136,0.08) !important; }
           @media (max-width: 640px) {
             .desktop-grid { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; scrollbar-width: none; }
             .desktop-grid::-webkit-scrollbar { display: none; }
@@ -63,28 +91,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div style={meshStyle} />
 
         {/* Navbar */}
-        <nav className="sticky top-0 z-50 border-b border-white/[0.06] bg-black/20 backdrop-blur-md">
+        <nav style={{ position: 'sticky', top: 0, zIndex: 50, borderBottom: '1px solid rgba(0,0,0,0.08)', background: 'rgba(255,251,245,0.9)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
           <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 font-bold text-white text-lg">
+            <Link href="/" className="flex items-center gap-2 font-bold text-lg" style={{ color: '#1a1a1a', textDecoration: 'none' }}>
               <span className="text-2xl">📍</span>
-              <span>AnyLocal</span>
+              <span style={{ color: '#0d9488' }}>AnyLocal</span>
             </Link>
             <div className="flex items-center gap-2">
               <Link
                 href="/portal"
-                className="text-sm text-white/60 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/[0.06] transition-colors hidden sm:block"
+                className="text-sm px-3 py-1.5 rounded-lg transition-colors hidden sm:block"
+                style={{ color: 'rgba(26,26,26,0.6)' }}
               >
                 My quotes
               </Link>
               <Link
                 href="/for-businesses"
-                className="text-sm text-orange-300 hover:text-orange-200 px-3 py-1.5 rounded-lg hover:bg-orange-500/[0.08] border border-orange-500/20 transition-colors hidden sm:block"
+                className="text-sm px-3 py-1.5 rounded-lg transition-colors hidden sm:block"
+                style={{ color: '#0d9488', border: '1px solid rgba(13,148,136,0.25)', borderRadius: 8 }}
               >
                 For businesses
               </Link>
               <Link
                 href="/search"
-                className="text-sm font-semibold bg-orange-500/90 hover:bg-orange-500 text-white px-4 py-1.5 rounded-lg transition-colors"
+                className="text-sm font-semibold px-4 py-1.5 rounded-lg transition-colors"
+                style={{ background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)', color: '#fff' }}
               >
                 Search
               </Link>
@@ -101,46 +132,46 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <OwnerAssistant />
         <AffiliateStrip />
 
-        <footer className="border-t border-white/[0.06] py-10 px-6 mt-20">
+        <footer className="border-t py-10 px-6 mt-20" style={{ borderColor: 'rgba(0,0,0,0.08)', background: '#f5f0e8' }}>
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-4 gap-8 mb-8">
               <div>
-                <div className="flex items-center gap-2 font-bold text-white mb-3">
+                <div className="flex items-center gap-2 font-bold mb-3" style={{ color: '#0d9488' }}>
                   <span className="text-xl">📍</span> AnyLocal
                 </div>
-                <p className="text-white/40 text-sm leading-relaxed">
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(26,26,26,0.5)' }}>
                   Find any local business, anywhere in the world — with honest AI review analysis.
                 </p>
               </div>
               <div>
-                <div className="font-semibold text-white/70 text-sm mb-3">Food & Stays</div>
-                <div className="flex flex-col gap-1.5 text-sm text-white/40">
-                  <Link href="/search?q=restaurants" className="hover:text-white/70 transition-colors">Restaurants</Link>
-                  <Link href="/search?q=hotels" className="hover:text-white/70 transition-colors">Hotels</Link>
-                  <Link href="/search?q=cafes" className="hover:text-white/70 transition-colors">Cafes</Link>
-                  <Link href="/search?q=pubs and bars" className="hover:text-white/70 transition-colors">Pubs & Bars</Link>
+                <div className="font-semibold text-sm mb-3" style={{ color: 'rgba(26,26,26,0.7)' }}>Food & Stays</div>
+                <div className="flex flex-col gap-1.5 text-sm" style={{ color: 'rgba(26,26,26,0.5)' }}>
+                  <Link href="/search?q=restaurants" className="hover:opacity-80 transition-opacity">Restaurants</Link>
+                  <Link href="/search?q=hotels" className="hover:opacity-80 transition-opacity">Hotels</Link>
+                  <Link href="/search?q=cafes" className="hover:opacity-80 transition-opacity">Cafes</Link>
+                  <Link href="/search?q=pubs and bars" className="hover:opacity-80 transition-opacity">Pubs & Bars</Link>
                 </div>
               </div>
               <div>
-                <div className="font-semibold text-white/70 text-sm mb-3">Services</div>
-                <div className="flex flex-col gap-1.5 text-sm text-white/40">
-                  <Link href="/search?q=plumbers" className="hover:text-white/70 transition-colors">Plumbers</Link>
-                  <Link href="/search?q=electricians" className="hover:text-white/70 transition-colors">Electricians</Link>
-                  <Link href="/search?q=dentists" className="hover:text-white/70 transition-colors">Dentists</Link>
-                  <Link href="/search?q=gyms" className="hover:text-white/70 transition-colors">Gyms</Link>
+                <div className="font-semibold text-sm mb-3" style={{ color: 'rgba(26,26,26,0.7)' }}>Services</div>
+                <div className="flex flex-col gap-1.5 text-sm" style={{ color: 'rgba(26,26,26,0.5)' }}>
+                  <Link href="/search?q=plumbers" className="hover:opacity-80 transition-opacity">Plumbers</Link>
+                  <Link href="/search?q=electricians" className="hover:opacity-80 transition-opacity">Electricians</Link>
+                  <Link href="/search?q=dentists" className="hover:opacity-80 transition-opacity">Dentists</Link>
+                  <Link href="/search?q=gyms" className="hover:opacity-80 transition-opacity">Gyms</Link>
                 </div>
               </div>
               <div>
-                <div className="font-semibold text-white/70 text-sm mb-3">Businesses</div>
-                <div className="flex flex-col gap-1.5 text-sm text-white/40">
-                  <Link href="/for-businesses" className="hover:text-orange-400 text-orange-400/70 transition-colors font-medium">List your trade →</Link>
-                  <Link href="/for-businesses#register" className="hover:text-white/70 transition-colors">Register free</Link>
-                  <Link href="/for-businesses" className="hover:text-white/70 transition-colors">Pricing</Link>
-                  <a href="mailto:hello@anylocal.app" className="hover:text-white/70 transition-colors">Contact us</a>
+                <div className="font-semibold text-sm mb-3" style={{ color: 'rgba(26,26,26,0.7)' }}>Businesses</div>
+                <div className="flex flex-col gap-1.5 text-sm" style={{ color: 'rgba(26,26,26,0.5)' }}>
+                  <Link href="/for-businesses" style={{ color: '#0d9488' }} className="transition-colors font-medium hover:opacity-80">List your trade →</Link>
+                  <Link href="/for-businesses#register" className="hover:opacity-80 transition-opacity">Register free</Link>
+                  <Link href="/for-businesses" className="hover:opacity-80 transition-opacity">Pricing</Link>
+                  <a href="mailto:hello@anylocal.app" className="hover:opacity-80 transition-opacity">Contact us</a>
                 </div>
               </div>
             </div>
-            <div className="border-t border-white/[0.06] pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-white/30 text-xs">
+            <div className="border-t pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs" style={{ borderColor: 'rgba(0,0,0,0.08)', color: 'rgba(26,26,26,0.4)' }}>
               <span>© {new Date().getFullYear()} AnyLocal. All rights reserved.</span>
               <span>Powered by Google Places + AI review analysis</span>
             </div>

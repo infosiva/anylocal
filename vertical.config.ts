@@ -14,7 +14,7 @@ const config: AnyLocalConfig = {
   name: 'AnyLocal',
   tagline: 'Tell us what you need — we find, vet, and book the right local business in seconds.',
   domain: 'anylocal.app',
-  themeColor: 'orange',
+  themeColor: 'teal',
   metaTitle: 'AnyLocal — Find Trusted Local Businesses, AI-Ranked Worldwide',
   metaDescription: 'AI reads real reviews so you do not have to — honest summaries of quality, value, and reliability. No commission, no hidden fees. Find plumbers, restaurants, dentists and more worldwide.',
   keywords: ['find local', 'near me', 'restaurant finder', 'plumber near me', 'local business', 'AI reviews', 'best local'],

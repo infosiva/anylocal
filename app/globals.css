@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #080712;
-  --foreground: #f0eeff;
+  --background: #fffbf5;
+  --foreground: #1a1a1a;
 }
 
 * {
@@ -93,6 +93,26 @@ body {
 
 /* ── Star rating ────────────────────────────────────────── */
 .stars { color: #f59e0b; letter-spacing: 2px; }
+
+/* ── Light theme overrides ──────────────────────────────── */
+.glass {
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(0,0,0,0.07);
+}
+.glass-strong {
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(0,0,0,0.10);
+}
+.input-dark {
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.12);
+  color: #1a1a1a;
+}
+.input-dark:focus {
+  border-color: rgba(13,148,136,0.5);
+  box-shadow: 0 0 0 3px rgba(13,148,136,0.08);
+}
+.input-dark::placeholder { color: rgba(26,26,26,0.35); }
 
 /* ── Typing indicator ───────────────────────────────────── */
 @keyframes blink {
