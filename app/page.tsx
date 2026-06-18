@@ -591,6 +591,7 @@ export default function HomePage() {
                 </span>
               ))}
             </div>
+            <p style={{ fontSize: 11, opacity: 0.6, marginTop: 10 }}>Have a promo code? <a href="#promo" style={{ textDecoration: 'underline' }}>Apply here</a></p>
           </motion.div>
 
           {/* Business CTA */}
