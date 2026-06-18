@@ -2,7 +2,12 @@
 
 :root {
   --background: #fffbf5;
-  --foreground: #1a1a1a;
+  --foreground: #0f172a;
+  --accent: #0d9488;
+  --accent-2: #0891b2;
+  --border: #99f6e4;
+  --surface-1: #ffffff;
+  --surface-2: #f0fdfa;
 }
 
 * {
@@ -69,10 +74,10 @@ body {
 }
 .pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
 
-/* ── Scrollbar — uses CSS var from layout ───────────────── */
+/* ── Scrollbar ──────────────────────────────────────────── */
 ::-webkit-scrollbar       { width: 6px; }
-::-webkit-scrollbar-track { background: var(--theme-base, #0d0920); }
-::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--theme-primary, #7c3aed) 60%, transparent); border-radius: 3px; }
+::-webkit-scrollbar-track { background: #fff7ed; }
+::-webkit-scrollbar-thumb { background: rgba(234,88,12,0.35); border-radius: 3px; }
 
 /* ── Custom input styles ────────────────────────────────── */
 .input-dark {
@@ -86,8 +91,8 @@ body {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .input-dark:focus {
-  border-color: rgba(139,92,246,0.5);
-  box-shadow: 0 0 0 3px rgba(139,92,246,0.12);
+  border-color: rgba(234,88,12,0.5);
+  box-shadow: 0 0 0 3px rgba(234,88,12,0.10);
 }
 .input-dark::placeholder { color: rgba(255,255,255,0.3); }
 
@@ -109,10 +114,10 @@ body {
   color: #1a1a1a;
 }
 .input-dark:focus {
-  border-color: rgba(13,148,136,0.5);
-  box-shadow: 0 0 0 3px rgba(13,148,136,0.08);
+  border-color: rgba(234,88,12,0.45);
+  box-shadow: 0 0 0 3px rgba(234,88,12,0.08);
 }
-.input-dark::placeholder { color: rgba(26,26,26,0.35); }
+.input-dark::placeholder { color: rgba(15,23,42,0.35); }
 
 /* ── Typing indicator ───────────────────────────────────── */
 @keyframes blink {
