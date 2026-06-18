@@ -68,7 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body className={`${inter.variable} ${jakartaSans.variable} min-h-full flex flex-col`}
-        style={{ background: '#fffbf5', color: '#1a1a1a', fontFamily: 'var(--font-body, system-ui)', overflowX: 'hidden' }}
+        style={{ background: 'var(--background, #fffbf5)', color: 'var(--foreground, #0f172a)', fontFamily: 'var(--font-body, system-ui)', overflowX: 'hidden' }}
       >
         <style>{`
           *, *::before, *::after { box-sizing: border-box; }
@@ -96,7 +96,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <nav style={{ position: 'sticky', top: 0, zIndex: 50, borderBottom: '1px solid rgba(0,0,0,0.08)', background: 'rgba(255,251,245,0.9)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
           <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 font-bold text-lg" style={{ color: '#1a1a1a', textDecoration: 'none' }}>
-              <span className="text-2xl">📍</span>
+              <span
+                className="flex items-center justify-center rounded-lg"
+                style={{ width: 28, height: 28, background: 'linear-gradient(135deg, #0d9488, #0891b2)', flexShrink: 0 }}
+                aria-hidden
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 21s7-6.5 7-11.5A7 7 0 005 9.5C5 14.5 12 21 12 21z" fill="white" />
+                  <circle cx="12" cy="9.5" r="2" fill="#0d9488" />
+                </svg>
+              </span>
               <span style={{ color: '#0d9488' }}>AnyLocal</span>
             </Link>
             <div className="flex items-center gap-2">
