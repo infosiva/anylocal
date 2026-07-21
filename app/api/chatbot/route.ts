@@ -1,5 +1,6 @@
 import Groq from 'groq-sdk'
 import { NextRequest, NextResponse } from 'next/server'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 let _groq: Groq | null = null
 function getGroq() { if (!_groq) _groq = new Groq({ apiKey: process.env.GROQ_API_KEY! }); return _groq }
@@ -13,6 +14,10 @@ interface Message {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
+    const { ok } = checkRateLimit(`chatbot_${ip}`, 60)
+    if (!ok) return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
+
     const body = await req.json()
 
     const messages: Message[] = body.messages

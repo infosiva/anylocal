@@ -11,6 +11,7 @@ import AuthButton from '@/components/AuthButton'
 import AffiliateStrip from '@/components/AffiliateStrip'
 import OnboardingTour from '@/components/OnboardingTour'
 import FeedbackWidget from '@/components/FeedbackWidget'
+import ChatBot from '@/components/ChatBot'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-body', display: 'swap' })
 
@@ -142,7 +143,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <OnboardingTour />
         <OwnerAssistant />
         <AffiliateStrip />
-        <FeedbackWidget siteName="AnyLocal" />
+        <FeedbackWidget siteName="AnyLocal" position="left" />
+        <ChatBot />
 
         <footer className="border-t py-10 px-6 mt-20" style={{ borderColor: 'rgba(0,0,0,0.08)', background: '#f5f0e8' }}>
           <div className="max-w-6xl mx-auto">
