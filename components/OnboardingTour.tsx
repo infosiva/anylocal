@@ -70,6 +70,9 @@ export default function OnboardingTour() {
           {/* Card */}
           <motion.div
             key={step}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="onboarding-tour-title"
             initial={{ opacity: 0, scale: 0.94, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 20 }}
@@ -114,7 +117,7 @@ export default function OnboardingTour() {
             </div>
 
             {/* Text */}
-            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#faf8f4', margin: '0 0 10px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
+            <h2 id="onboarding-tour-title" style={{ fontSize: 20, fontWeight: 800, color: '#faf8f4', margin: '0 0 10px', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
               {current.title}
             </h2>
             <p style={{ fontSize: 13, color: 'rgba(250,248,244,0.6)', lineHeight: 1.65, margin: '0 0 28px' }}>

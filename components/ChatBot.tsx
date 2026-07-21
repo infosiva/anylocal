@@ -174,7 +174,7 @@ export default function ChatBot() {
                 </div>
               </div>
             </div>
-            <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: 4 }}>
+            <button onClick={() => setOpen(false)} aria-label="Close chat" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: 4 }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
@@ -233,6 +233,7 @@ export default function ChatBot() {
               onChange={e => setInput(e.target.value)}
               onKeyDown={onKey}
               placeholder="Ask about local search…"
+              aria-label="Message to LocalBot"
               disabled={loading}
               style={{
                 flex: 1, background: 'rgba(249,115,22,0.06)', border: '1px solid rgba(249,115,22,0.25)',
@@ -245,6 +246,7 @@ export default function ChatBot() {
             <button
               onClick={send}
               disabled={loading || !input.trim()}
+              aria-label="Send message"
               style={{
                 width: 38, height: 38, borderRadius: 10, border: 'none',
                 background: input.trim() && !loading ? 'linear-gradient(135deg, #f97316, #ea580c)' : 'rgba(255,255,255,0.06)',

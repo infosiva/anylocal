@@ -269,6 +269,7 @@ function FloatingChat() {
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && send()}
               placeholder="What service do you need?"
+              aria-label="What service do you need?"
               style={{
                 flex: 1, background: T.bgMuted, border: `1px solid ${T.border2}`,
                 borderRadius: 8, padding: '8px 12px', fontSize: isMobile ? 16 : 13.5,
@@ -406,6 +407,7 @@ export default function HomePage() {
               onChange={e => setQ(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && go()}
               placeholder='e.g. "plumber this weekend in Manchester"'
+              aria-label="Search for a local service"
               readOnly={listening}
               autoFocus
               style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: 14, color: T.text, minWidth: 0, padding: '10px 0' }}

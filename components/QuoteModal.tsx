@@ -90,7 +90,7 @@ export default function QuoteModal({ businesses, searchQuery, onClose }: Props) 
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="quote-modal-title">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
@@ -99,10 +99,10 @@ export default function QuoteModal({ businesses, searchQuery, onClose }: Props) 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
           <div>
-            <h2 className="text-white font-bold text-lg">Get free quotes</h2>
+            <h2 id="quote-modal-title" className="text-white font-bold text-lg">Get free quotes</h2>
             <p className="text-white/45 text-xs mt-0.5">One form → sent to {businesses.length} businesses</p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl text-white/40 hover:text-white/70 hover:bg-white/[0.06] transition-colors">
+          <button onClick={onClose} aria-label="Close" className="p-2 rounded-xl text-white/40 hover:text-white/70 hover:bg-white/[0.06] transition-colors">
             <X size={18} />
           </button>
         </div>

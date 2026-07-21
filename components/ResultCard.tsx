@@ -105,6 +105,10 @@ export default function ResultCard({ place, rank, userLat, userLng, active, onRe
   return (
     <div
       onClick={() => onActivate(place.id)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onActivate(place.id) } }}
+      aria-pressed={active}
       className={`bg-white/[0.03] border rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer
         ${active
           ? 'border-orange-500/50 ring-1 ring-orange-500/30 bg-orange-500/[0.04]'

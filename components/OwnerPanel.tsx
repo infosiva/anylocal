@@ -98,11 +98,11 @@ function OwnerPanel({ onClose }: { onClose: () => void }) {
         <span style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>Owner Assistant</span>
         <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 99, background: 'rgba(251,191,36,0.15)', color: '#fbbf24', fontWeight: 700, border: '1px solid rgba(251,191,36,0.25)' }}>PRIVATE</span>
         <div style={{ flex: 1 }} />
-        <button onClick={() => setMessages([messages[0]])} title="Clear chat"
+        <button onClick={() => setMessages([messages[0]])} title="Clear chat" aria-label="Clear chat"
           style={{ padding: 4, background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)' }}>
           <Trash2 size={13} />
         </button>
-        <button onClick={onClose}
+        <button onClick={onClose} aria-label="Close owner assistant"
           style={{ padding: 4, background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)' }}>
           <X size={16} />
         </button>
@@ -137,7 +137,7 @@ function OwnerPanel({ onClose }: { onClose: () => void }) {
       {/* Input */}
       <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
-          <button onClick={toggleVoice}
+          <button onClick={toggleVoice} aria-label={listening ? 'Stop voice input' : 'Start voice input'}
             style={{ padding: '8px', borderRadius: 10, border: 'none', cursor: 'pointer', flexShrink: 0,
               background: listening ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.06)',
               color: listening ? '#f87171' : 'rgba(255,255,255,0.5)' }}>
@@ -148,10 +148,11 @@ function OwnerPanel({ onClose }: { onClose: () => void }) {
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
             placeholder={listening ? '🎤 Listening…' : 'Ask anything about AnyLocal… (Enter to send)'}
+            aria-label="Message to owner assistant"
             rows={2}
             style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '8px 12px', color: '#fff', fontSize: 13, outline: 'none', resize: 'none', fontFamily: 'inherit', lineHeight: 1.4 }}
           />
-          <button onClick={send} disabled={!input.trim() || loading}
+          <button onClick={send} disabled={!input.trim() || loading} aria-label="Send message"
             style={{ padding: '8px 12px', borderRadius: 10, border: 'none', cursor: !input.trim() || loading ? 'not-allowed' : 'pointer', flexShrink: 0,
               background: !input.trim() || loading ? 'rgba(255,255,255,0.06)' : 'linear-gradient(135deg,#d97706,#b45309)',
               color: !input.trim() || loading ? 'rgba(255,255,255,0.3)' : '#fff' }}>
@@ -189,6 +190,7 @@ export default function OwnerAssistant() {
       <button
         onClick={() => { setVisible(true); setOpen(true) }}
         title="Owner Assistant (Shift+Alt+O)"
+        aria-label="Open owner assistant"
         style={{
           position: 'fixed', bottom: 20, right: 20, zIndex: 9998,
           width: 44, height: 44, borderRadius: '50%', border: '1px solid rgba(251,191,36,0.3)',
