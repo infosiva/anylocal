@@ -5,14 +5,32 @@ import MagicAuthModal from "@/lib/auth/MagicAuthModal";
 import { getStoredUser, clearAuth } from "@/lib/auth/useMagicAuth";
 import type { AuthUser } from "@/lib/auth/useMagicAuth";
 import { SITE_CONFIG } from "@/lib/store";
+import { redeemGuestCode } from "@/lib/shared/useGate";
 
 export default function AuthButton() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [showAuth, setShowAuth] = useState(false);
+  const [showCodeInput, setShowCodeInput] = useState(false);
+  const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState("");
+  const [redeeming, setRedeeming] = useState(false);
 
   useEffect(() => {
     setUser(getStoredUser());
   }, []);
+
+  async function handleRedeem() {
+    if (!code.trim()) return;
+    setRedeeming(true);
+    setCodeError("");
+    const res = await redeemGuestCode(SITE_CONFIG.site, code.trim());
+    setRedeeming(false);
+    if (res.ok) {
+      window.location.reload();
+    } else {
+      setCodeError(res.error ?? "Invalid code");
+    }
+  }
 
   if (user) {
     return (
