@@ -80,6 +80,59 @@ export default function AuthButton() {
       >
         Sign in free
       </button>
+      {!showCodeInput ? (
+        <button
+          onClick={() => setShowCodeInput(true)}
+          style={{
+            background: "none",
+            border: "none",
+            color: "rgba(148,163,184,0.7)",
+            fontSize: "11px",
+            cursor: "pointer",
+            padding: "4px 6px",
+            textDecoration: "underline",
+          }}
+        >
+          Have a code?
+        </button>
+      ) : (
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <input
+            value={code}
+            onChange={(e) => { setCode(e.target.value); setCodeError(""); }}
+            placeholder="Enter code"
+            style={{
+              width: "110px",
+              padding: "6px 8px",
+              borderRadius: "6px",
+              border: "1px solid rgba(51,65,85,0.5)",
+              background: "transparent",
+              color: "#fff",
+              fontSize: "11px",
+            }}
+          />
+          <button
+            onClick={handleRedeem}
+            disabled={redeeming || !code.trim()}
+            style={{
+              fontSize: "11px",
+              fontWeight: 600,
+              padding: "6px 10px",
+              borderRadius: "6px",
+              border: "none",
+              background: SITE_CONFIG.accentColor,
+              color: "#fff",
+              cursor: redeeming ? "default" : "pointer",
+              opacity: redeeming ? 0.7 : 1,
+            }}
+          >
+            {redeeming ? "…" : "Redeem"}
+          </button>
+        </div>
+      )}
+      {codeError && (
+        <span style={{ fontSize: "11px", color: "#f87171" }}>{codeError}</span>
+      )}
       <MagicAuthModal
         isOpen={showAuth}
         onClose={() => setShowAuth(false)}
