@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { callAI } from '@/lib/ai'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 // Simple shared secret to prevent public access — set OWNER_KEY in env vars
 const OWNER_KEY = process.env.OWNER_KEY ?? 'anylocal-owner-2026'
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
+  const rl = checkRateLimit(ip, 10)
+  if (!rl.ok) return new Response('Rate limit exceeded', { status: 429 })
+
   const { message, key, history } = await req.json()
 
   if (key !== OWNER_KEY) {

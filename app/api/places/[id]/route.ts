@@ -8,6 +8,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { callAI } from '@/lib/ai'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 const PLACES_KEY = process.env.GOOGLE_PLACES_API_KEY
 
@@ -31,6 +32,10 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const ip = _req.headers.get('x-forwarded-for') ?? 'unknown'
+  const rl = checkRateLimit(ip, 10)
+  if (!rl.ok) return new Response('Rate limit exceeded', { status: 429 })
+
   const { id } = await params
 
   if (!PLACES_KEY) {

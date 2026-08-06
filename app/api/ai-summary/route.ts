@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 interface ReviewInput {
   rating: number
@@ -8,6 +9,10 @@ interface ReviewInput {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
+  const rl = checkRateLimit(ip, 10)
+  if (!rl.ok) return new Response('Rate limit exceeded', { status: 429 })
+
   let body: { name?: string; reviews?: ReviewInput[] }
   try { body = await req.json() } catch { return new Response('Bad JSON', { status: 400 }) }
 
