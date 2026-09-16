@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
 
 const jakartaSans = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-display', weight: ['700', '800'], display: 'swap' })
@@ -65,6 +66,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <head>
         <meta name="google-adsense-account" content="ca-pub-4237294630161176" />
+        <Script
+                  async
+                  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4237294630161176"
+                  crossOrigin="anonymous"
+                  strategy="afterInteractive"
+                />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body className={`${inter.variable} ${jakartaSans.variable} min-h-full flex flex-col`}
