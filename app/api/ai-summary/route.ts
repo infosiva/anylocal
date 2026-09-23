@@ -37,7 +37,7 @@ Keep it factual, under 60 words. Reviews:\n${reviewText || 'No reviews available
         method: 'POST',
         headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'llama-3.1-8b-instant',
+          model: 'qwen/qwen3.8-27b',
           messages: [{ role: 'user', content: prompt }],
           stream: true,
           max_tokens: 120,

@@ -98,7 +98,7 @@ function PortalInner() {
   const pending   = leads.filter(l => l.status !== 'responded')
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-12">
+    <div className="min-h-screen bg-[#080712] max-w-3xl mx-auto px-4 py-12">
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-white mb-2">My Quote Portal</h1>
         <p className="text-white/50 text-sm">Track your quote requests and business responses</p>

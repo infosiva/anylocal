@@ -35,37 +35,65 @@ Keep responses short, helpful, and location-aware. Use a friendly, practical ton
       ...messages.map((m: Message) => ({ role: m.role, content: m.content })),
     ]
 
-    const stream = await getGroq().chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
-      messages: chatMessages,
-      max_tokens: 600,
-      temperature: 0.7,
-      stream: true,
-    })
+    try {
+      const stream = await getGroq().chat.completions.create({
+        model: 'qwen/qwen3.8-27b',
+        messages: chatMessages,
+        max_tokens: 600,
+        temperature: 0.7,
+        stream: true,
+      })
 
-    const readable = new ReadableStream({
-      async start(controller) {
-        const encoder = new TextEncoder()
-        try {
-          for await (const chunk of stream) {
-            const text = chunk.choices[0]?.delta?.content ?? ''
-            if (text) controller.enqueue(encoder.encode(text))
+      const readable = new ReadableStream({
+        async start(controller) {
+          const encoder = new TextEncoder()
+          try {
+            for await (const chunk of stream) {
+              const text = chunk.choices[0]?.delta?.content ?? ''
+              if (text) controller.enqueue(encoder.encode(text))
+            }
+          } finally {
+            controller.close()
           }
-        } finally {
-          controller.close()
-        }
-      },
-    })
+        },
+      })
 
-    return new NextResponse(readable, {
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Transfer-Encoding': 'chunked',
-        'Cache-Control': 'no-cache',
-      },
-    })
+      return new NextResponse(readable, {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Transfer-Encoding': 'chunked',
+          'Cache-Control': 'no-cache',
+        },
+      })
+    } catch (groqErr) {
+      console.error('[/api/chatbot] groq failed, falling back to gemini', groqErr)
+      // Gemini fallback (§Y): non-streaming, but never a hard 500 on Groq outage
+      if (process.env.GEMINI_API_KEY) {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: chatMessages.filter(m => m.role !== 'system').map(m => ({
+                role: m.role === 'assistant' ? 'model' : 'user',
+                parts: [{ text: m.content }],
+              })),
+              systemInstruction: { parts: [{ text: systemPrompt }] },
+              generationConfig: { maxOutputTokens: 600 },
+            }),
+          }
+        )
+        if (res.ok) {
+          const data = await res.json()
+          const text = data.candidates?.[0]?.content?.parts?.[0]?.text
+          if (text) return NextResponse.json({ text })
+        }
+      }
+      return NextResponse.json({ text: 'Chat is resting — try again in a moment.' })
+    }
   } catch (err) {
     console.error('[/api/chatbot]', err)
-    return NextResponse.json({ error: 'Chat failed' }, { status: 500 })
+    return NextResponse.json({ text: 'Chat is resting — try again in a moment.' })
   }
 }

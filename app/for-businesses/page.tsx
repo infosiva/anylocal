@@ -118,7 +118,7 @@ export default function ForBusinessesPage() {
   }
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden min-h-screen bg-[#080712]">
 
       {/* ── HERO ──────────────────────────────────────────── */}
       <section className="relative px-6 pt-20 pb-20 max-w-5xl mx-auto text-center">
