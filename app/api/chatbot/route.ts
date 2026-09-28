@@ -70,7 +70,7 @@ Keep responses short, helpful, and location-aware. Use a friendly, practical ton
       // Gemini fallback (§Y): non-streaming, but never a hard 500 on Groq outage
       if (process.env.GEMINI_API_KEY) {
         const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
