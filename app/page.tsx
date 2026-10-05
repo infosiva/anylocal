@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, ArrowRight, CheckCircle, Mic, MicOff, MapPin, Star, ChevronRight } from 'lucide-react'
 import config from '../vertical.config'
+import { MagneticButton } from "@infosiva/shared-ui/modern";
 
 // ── Design tokens — warm white / teal directory ───────────
 const T = {
@@ -419,7 +420,7 @@ export default function HomePage() {
             >
               {listening ? <MicOff size={14} /> : <Mic size={14} />}
             </button>
-            <button
+            <MagneticButton
               onClick={() => go()}
               disabled={listening}
               style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '11px 18px', borderRadius: 10, fontWeight: 700, fontSize: 13, color: '#fff', background: T.btnGrad, border: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 3px 12px rgba(13,148,136,0.35)', transition: 'opacity 0.2s, transform 0.1s', minHeight: 42, whiteSpace: 'nowrap' }}
@@ -427,7 +428,7 @@ export default function HomePage() {
               onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
             >
               Find <ArrowRight size={13} />
-            </button>
+            </MagneticButton>
           </motion.div>
 
           <motion.p

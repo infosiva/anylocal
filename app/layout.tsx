@@ -13,6 +13,7 @@ import OnboardingTour from '@/components/OnboardingTour'
 import FeedbackWidget from '@/components/FeedbackWidget'
 import ChatBot from '@/components/ChatBot'
 
+import { MotionProvider } from "@infosiva/shared-ui/modern";
 const inter = Inter({ subsets: ['latin'], variable: '--font-body', display: 'swap' })
 
 export const metadata: Metadata = {
@@ -143,7 +144,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </nav>
 
         <main className="flex-1">
-          {children}
+          <MotionProvider>{children}</MotionProvider>
         </main>
 
         <OnboardingTour />
