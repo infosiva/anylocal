@@ -4,12 +4,13 @@ import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
 
 const jakartaSans = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-display', weight: ['700', '800'], display: 'swap' })
 import './globals.css'
-import { getMeshStyle, getScrollbarColor, COLOR_MAP } from '@/lib/themeColors'
+import { loadSiteTheme, buildThemeStyleTag, buildGa4Snippet, isWidgetHidden } from '@/lib/theme-loader'
+import { AnimatedBg } from '@/components/AnimatedBg'
+import ConsentBanner from '@/components/ConsentBanner'
+import Logo from '@/components/Logo'
 import Link from 'next/link'
 import OwnerAssistant from '@/components/OwnerPanel'
 import AuthButton from '@/components/AuthButton'
-import AffiliateStrip from '@/components/AffiliateStrip'
-import OnboardingTour from '@/components/OnboardingTour'
 import FeedbackWidget from '@/components/FeedbackWidget'
 import ChatBot from '@/components/ChatBot'
 
@@ -35,10 +36,6 @@ export const metadata: Metadata = {
   },
 }
 
-const themeColor = 'teal'
-const colors     = COLOR_MAP[themeColor]
-const meshStyle  = getMeshStyle(themeColor)
-
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -52,152 +49,74 @@ const jsonLd = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+const DEFAULTS = { background: '#fffbf5', primary: '#f0bc42', secondary: '#8a5d00' }
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const theme = await loadSiteTheme('anylocal')
+  const themeCss = buildThemeStyleTag(theme, DEFAULTS)
+  const ga4 = buildGa4Snippet(theme)
+  const ga4Id = theme?.analytics?.ga4Id
   return (
-    <html
-      lang="en"
-      className="h-full"
-      style={{
-        '--theme-primary':   colors.primary,
-        '--theme-secondary': colors.secondary,
-        '--theme-base':      colors.base,
-        '--scrollbar-color': getScrollbarColor(themeColor),
-      } as React.CSSProperties}
-      suppressHydrationWarning
-    >
+    <html lang="en" className="h-full" data-layout={theme?.layout?.archetype ?? 'map-first'} suppressHydrationWarning>
       <head>
         <meta name="google-adsense-account" content="ca-pub-4237294630161176" />
-        <Script
-                  async
-                  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4237294630161176"
-                  crossOrigin="anonymous"
-                  strategy="afterInteractive"
-                />
+        <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4237294630161176" crossOrigin="anonymous" strategy="afterInteractive" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <style dangerouslySetInnerHTML={{ __html: themeCss }} />
+        {ga4 && ga4Id && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`} />
+            <script dangerouslySetInnerHTML={{ __html: ga4 }} />
+          </>
+        )}
       </head>
       <body className={`${inter.variable} ${jakartaSans.variable} min-h-full flex flex-col`}
-        style={{ background: 'var(--background, #fffbf5)', color: 'var(--foreground, #0f172a)', fontFamily: 'var(--font-body, system-ui)', overflowX: 'hidden' }}
-      >
+        style={{ background: 'var(--background, #fffbf5)', color: '#0f1419', fontFamily: 'var(--font-body, system-ui)', overflowX: 'hidden' }}>
+        <AnimatedBg theme={theme} fallback="none" />
         <style>{`
           *, *::before, *::after { box-sizing: border-box; }
-          html { overflow-x: hidden; max-width: 100%; }
-          body { overflow-x: hidden; max-width: 100%; }
+          html, body { overflow-x: hidden; max-width: 100%; }
           h1, h2, h3, .font-display { font-family: var(--font-display, system-ui) !important; }
           img, video { max-width: 100%; }
-          /* Horizontal category scroll — mobile only */
-          .cat-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; -ms-overflow-style: none; }
+          .cat-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
           .cat-scroll::-webkit-scrollbar { display: none; }
-          /* Stronger card lift */
-          .local-card { transition: all 180ms cubic-bezier(0.23,1,0.32,1); }
-          .local-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.12); border-color: rgba(13,148,136,0.35) !important; }
-          /* Search bar pulse on focus */
-          .search-bar:focus-within { border-color: rgba(13,148,136,0.45) !important; box-shadow: 0 0 0 3px rgba(13,148,136,0.08) !important; }
-          @media (max-width: 640px) {
-            .desktop-grid { display: flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; scrollbar-width: none; }
-            .desktop-grid::-webkit-scrollbar { display: none; }
-            .desktop-grid > * { flex-shrink: 0 !important; min-width: 100px !important; }
-          }
+          .local-card { transition: transform 180ms cubic-bezier(0.23,1,0.32,1), box-shadow 180ms, border-color 180ms; }
+          .local-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(15,20,25,0.12); border-color: rgba(240,188,66,0.7) !important; }
+          .search-bar:focus-within { border-color: #f0bc42 !important; box-shadow: 0 0 0 3px rgba(240,188,66,0.25) !important; }
+          .al-nav a { min-height: 44px; display: inline-flex; align-items: center; }
+          @media (max-width: 640px) { .al-hide-sm { display: none !important; } }
+          .al-btn:active { transform: scale(0.97); }
+          a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid #8a5d00; outline-offset: 2px; }
+          @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
         `}</style>
-        <div style={meshStyle} />
-
-        {/* Navbar */}
-        <nav style={{ position: 'sticky', top: 0, zIndex: 50, borderBottom: '1px solid rgba(0,0,0,0.08)', background: 'rgba(255,251,245,0.9)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
-          <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 font-bold text-lg" style={{ color: '#1a1a1a', textDecoration: 'none' }}>
-              <span
-                className="flex items-center justify-center rounded-lg"
-                style={{ width: 28, height: 28, background: 'linear-gradient(135deg, #0d9488, #0891b2)', flexShrink: 0 }}
-                aria-hidden
-              >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 21s7-6.5 7-11.5A7 7 0 005 9.5C5 14.5 12 21 12 21z" fill="white" />
-                  <circle cx="12" cy="9.5" r="2" fill="#0d9488" />
-                </svg>
-              </span>
-              <span style={{ color: '#0d9488' }}>AnyLocal</span>
-            </Link>
-            <div className="flex items-center gap-2">
-              <Link
-                href="/portal"
-                className="text-sm px-3 py-1.5 rounded-lg transition-colors hidden sm:block"
-                style={{ color: 'rgba(26,26,26,0.6)' }}
-              >
-                My quotes
-              </Link>
-              <Link
-                href="/for-businesses"
-                className="text-sm px-3 py-1.5 rounded-lg transition-colors hidden sm:block"
-                style={{ color: '#0d9488', border: '1px solid rgba(13,148,136,0.25)', borderRadius: 8 }}
-              >
-                For businesses
-              </Link>
-              <Link
-                href="/search"
-                className="text-sm font-semibold px-4 py-1.5 rounded-lg transition-colors"
-                style={{ background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)', color: '#fff' }}
-              >
-                Search
-              </Link>
-              <AuthButton />
-            </div>
-          </div>
-        </nav>
-
-        <main className="flex-1">
-          <MotionProvider>{children}</MotionProvider>
-        </main>
-
-        <OnboardingTour />
-        <OwnerAssistant />
-        <AffiliateStrip />
-        <FeedbackWidget siteName="AnyLocal" position="left" />
-        <ChatBot />
-
-        <footer className="border-t py-10 px-6 mt-20" style={{ borderColor: 'rgba(0,0,0,0.08)', background: '#f5f0e8' }}>
-          <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-4 gap-8 mb-8">
-              <div>
-                <div className="flex items-center gap-2 font-bold mb-3" style={{ color: '#0d9488' }}>
-                  <span className="text-xl">📍</span> AnyLocal
-                </div>
-                <p className="text-sm leading-relaxed" style={{ color: 'rgba(26,26,26,0.5)' }}>
-                  Find any local business, anywhere in the world — with honest AI review analysis.
-                </p>
-              </div>
-              <div>
-                <div className="font-semibold text-sm mb-3" style={{ color: 'rgba(26,26,26,0.7)' }}>Food & Stays</div>
-                <div className="flex flex-col gap-1.5 text-sm" style={{ color: 'rgba(26,26,26,0.5)' }}>
-                  <Link href="/search?q=restaurants" className="hover:opacity-80 transition-opacity">Restaurants</Link>
-                  <Link href="/search?q=hotels" className="hover:opacity-80 transition-opacity">Hotels</Link>
-                  <Link href="/search?q=cafes" className="hover:opacity-80 transition-opacity">Cafes</Link>
-                  <Link href="/search?q=pubs and bars" className="hover:opacity-80 transition-opacity">Pubs & Bars</Link>
-                </div>
-              </div>
-              <div>
-                <div className="font-semibold text-sm mb-3" style={{ color: 'rgba(26,26,26,0.7)' }}>Services</div>
-                <div className="flex flex-col gap-1.5 text-sm" style={{ color: 'rgba(26,26,26,0.5)' }}>
-                  <Link href="/search?q=plumbers" className="hover:opacity-80 transition-opacity">Plumbers</Link>
-                  <Link href="/search?q=electricians" className="hover:opacity-80 transition-opacity">Electricians</Link>
-                  <Link href="/search?q=dentists" className="hover:opacity-80 transition-opacity">Dentists</Link>
-                  <Link href="/search?q=gyms" className="hover:opacity-80 transition-opacity">Gyms</Link>
-                </div>
-              </div>
-              <div>
-                <div className="font-semibold text-sm mb-3" style={{ color: 'rgba(26,26,26,0.7)' }}>Businesses</div>
-                <div className="flex flex-col gap-1.5 text-sm" style={{ color: 'rgba(26,26,26,0.5)' }}>
-                  <Link href="/for-businesses" style={{ color: '#0d9488' }} className="transition-colors font-medium hover:opacity-80">List your trade →</Link>
-                  <Link href="/for-businesses#register" className="hover:opacity-80 transition-opacity">Register free</Link>
-                  <Link href="/for-businesses" className="hover:opacity-80 transition-opacity">Pricing</Link>
-                  <a href="mailto:hello@anylocal.app" className="hover:opacity-80 transition-opacity">Contact us</a>
-                </div>
+        <MotionProvider>
+          <nav className="al-nav" style={{ position: 'sticky', top: 0, zIndex: 40, background: '#0f1419', borderBottom: '1px solid rgba(240,188,66,0.25)' }}>
+            <div style={{ maxWidth: 1152, margin: '0 auto', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <Link href="/" aria-label="AnyLocal home" style={{ textDecoration: 'none', minHeight: 44, display: 'inline-flex', alignItems: 'center' }}><Logo /></Link>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 14, fontWeight: 600 }}>
+                <Link href="/search" className="al-hide-sm" style={{ color: '#fffbf5', textDecoration: 'none' }}>Search</Link>
+                <Link href="/for-businesses" style={{ color: '#fffbf5', textDecoration: 'none' }}>For businesses</Link>
+                <AuthButton />
               </div>
             </div>
-            <div className="border-t pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs" style={{ borderColor: 'rgba(0,0,0,0.08)', color: 'rgba(26,26,26,0.4)' }}>
-              <span>© {new Date().getFullYear()} AnyLocal. All rights reserved.</span>
-              <span>Powered by Google Places + AI review analysis</span>
+          </nav>
+          <main style={{ flex: 1 }}>{children}</main>
+          <footer style={{ background: '#0f1419', color: 'rgba(255,251,245,0.75)', padding: '28px 16px', fontSize: 13 }}>
+            <div style={{ maxWidth: 1152, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', justifyContent: 'space-between' }}>
+              <Logo size={24} />
+              <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+                <Link href="/search" style={{ color: 'inherit' }}>Search</Link>
+                <Link href="/for-businesses" style={{ color: 'inherit' }}>For businesses</Link>
+                <Link href="/privacy" style={{ color: 'inherit' }}>Privacy</Link>
+              </div>
+              <span>&copy; {new Date().getFullYear()} AnyLocal</span>
             </div>
-          </div>
-        </footer>
+          </footer>
+          <OwnerAssistant />
+          {!isWidgetHidden(theme, 'chatbot') && <ChatBot />}
+          <FeedbackWidget siteName="AnyLocal" position="left" accentColor="#f0bc42" accentColor2="#f0bc42" />
+        </MotionProvider>
+        <ConsentBanner />
       </body>
     </html>
   )
