@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Redesigns — AnyLocal + ResumeVault</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #080712; color: #e2e8f0; font-family: system-ui, -apple-system, sans-serif; padding: 0; }
+
+/* ── NAV ── */
+.page-nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(8,7,18,0.95); backdrop-filter: blur(20px);
+}
+.nav-tab {
+  flex: 1; padding: 14px 20px; font-size: 12px; font-weight: 600;
+  color: #475569; cursor: pointer; border: none; background: transparent;
+  border-bottom: 2px solid transparent; transition: all 0.2s; text-align: center;
+  letter-spacing: 0.02em;
+}
+.nav-tab.active { color: #f97316; border-bottom-color: #f97316; background: rgba(249,115,22,0.04); }
+.nav-tab:hover:not(.active) { color: #94a3b8; }
+
+/* ── SECTIONS ── */
+.section { display: none; }
+.section.active { display: block; }
+
+/* ═══════════════════════════════════════════════════════════
+   ANYLOCAL SEARCH
+═══════════════════════════════════════════════════════════ */
+.anylocal-wrap {
+  background: #080712;
+  min-height: 100vh;
+}
+
+/* Sticky search bar */
+.search-bar-sticky {
+  position: sticky; top: 44px; z-index: 50;
+  background: rgba(8,7,18,0.96); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 10px 16px;
+}
+.search-row {
+  display: flex; gap: 8px; align-items: center; max-width: 1200px; margin: 0 auto;
+}
+.search-input-wrap {
+  flex: 1; display: flex; align-items: center; gap-8px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(249,115,22,0.3);
+  border-radius: 12px; padding: 8px 14px; gap: 8px;
+}
+.search-input-wrap input {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: white; font-size: 13px;
+}
+.search-input-wrap input::placeholder { color: #475569; }
+.filter-pill {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px; padding: 6px 12px; font-size: 11px; color: #94a3b8;
+  cursor: pointer; white-space: nowrap; transition: all 0.15s;
+}
+.filter-pill.on { background: rgba(249,115,22,0.12); border-color: rgba(249,115,22,0.3); color: #fb923c; }
+.filter-pill:hover { border-color: rgba(255,255,255,0.2); color: #cbd5e1; }
+
+/* Split layout */
+.split-main {
+  display: grid; grid-template-columns: 420px 1fr;
+  height: calc(100vh - 120px);
+  max-width: 1200px; margin: 0 auto;
+}
+.results-col {
+  overflow-y: auto; padding: 14px;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.results-col::-webkit-scrollbar { width: 4px; }
+.results-col::-webkit-scrollbar-track { background: transparent; }
+.results-col::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.results-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 2px 8px;
+}
+.results-count { font-size: 11px; color: #475569; }
+.results-count strong { color: #94a3b8; }
+.sort-select {
+  font-size: 10px; color: #64748b; background: transparent; border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px; padding: 3px 8px; cursor: pointer;
+}
+
+/* Result card */
+.rcard {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px; padding: 12px 14px;
+  cursor: pointer; transition: all 0.15s;
+}
+.rcard:hover { border-color: rgba(249,115,22,0.25); background: rgba(249,115,22,0.03); }
+.rcard.active { border-color: rgba(249,115,22,0.45); background: rgba(249,115,22,0.06); }
+
+.rcard-top { display: flex; gap: 10px; align-items: flex-start; }
+.rank-badge {
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+}
+.rank-1 { background: rgba(245,158,11,0.2); color: #fbbf24; }
+.rank-2 { background: rgba(255,255,255,0.06); color: #94a3b8; }
+.rank-3 { background: rgba(255,255,255,0.04); color: #64748b; }
+
+.rcard-name { font-size: 13px; font-weight: 600; color: white; line-height: 1.3; }
+.rcard-addr { font-size: 10px; color: #475569; margin-top: 2px; display: flex; align-items: center; gap: 3px; }
+
+.trust-badge {
+  font-size: 9px; padding: 2px 7px; border-radius: 20px; font-weight: 600;
+  margin-left: auto; flex-shrink: 0;
+}
+.tb-excellent { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+.tb-good      { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
+.tb-fair      { background: rgba(255,255,255,0.05); color: #64748b; border: 1px solid rgba(255,255,255,0.1); }
+
+.rcard-meta {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+  margin: 8px 0 0 36px; font-size: 10px; color: #64748b;
+}
+.meta-dot { width: 3px; height: 3px; border-radius: 50%; background: #334155; }
+.open-pill { color: #34d399; font-weight: 600; }
+.closed-pill { color: #f87171; }
+.dist-pill { color: #8b5cf6; }
+
+.rcard-actions {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  margin: 10px 0 0 36px;
+}
+.act-btn {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 10px; padding: 4px 9px; border-radius: 7px;
+  border: 1px solid; cursor: pointer; transition: all 0.12s; font-weight: 500;
+}
+.act-call   { background: rgba(249,115,22,0.15); border-color: rgba(249,115,22,0.3); color: #fb923c; }
+.act-web    { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); color: #94a3b8; }
+.act-quote  { background: rgba(249,115,22,0.1); border-color: rgba(249,115,22,0.25); color: #f97316; font-weight: 600; }
+.act-ai     { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.2); color: #a78bfa; }
+
+/* AI summary inline expand */
+.ai-expand {
+  margin: 8px 0 0 36px;
+  background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.15);
+  border-radius: 10px; padding: 10px 12px;
+}
+.ai-expand-label { font-size: 9px; font-weight: 700; color: #8b5cf6; letter-spacing: 0.05em; margin-bottom: 5px; }
+.ai-expand-text { font-size: 10px; color: #94a3b8; line-height: 1.6; }
+.ai-highlight { color: #34d399; font-weight: 600; }
+.ai-warn      { color: #fbbf24; font-weight: 600; }
+
+/* Map panel */
+.map-col {
+  position: relative; overflow: hidden;
+  background: #13111f;
+}
+.map-bg {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(rgba(139,92,246,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139,92,246,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.map-roads {
+  position: absolute; inset: 0; opacity: 0.08;
+}
+.map-pin {
+  position: absolute;
+  width: 28px; height: 28px;
+  border: 2px solid white; border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: transform 0.15s;
+}
+.map-pin:hover { transform: rotate(-45deg) scale(1.15); }
+.map-pin.p1 { background: #f97316; top: 32%; left: 38%; }
+.map-pin.p2 { background: #4b5563; top: 52%; left: 58%; }
+.map-pin.p3 { background: #4b5563; top: 65%; left: 28%; }
+.map-pin-n { transform: rotate(45deg); color: white; font-size: 9px; font-weight: 700; }
+
+.map-popup {
+  position: absolute; top: 14%; left: 46%;
+  background: rgba(15,10,30,0.95); border: 1px solid rgba(249,115,22,0.4);
+  border-radius: 10px; padding: 8px 12px; min-width: 160px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
+}
+.popup-name { font-size: 11px; font-weight: 700; color: white; }
+.popup-rating { font-size: 10px; color: #f97316; margin-top: 2px; }
+.popup-open { font-size: 9px; color: #34d399; margin-top: 2px; }
+.popup-actions { display: flex; gap: 5px; margin-top: 7px; }
+.popup-btn {
+  font-size: 9px; padding: 3px 8px; border-radius: 5px;
+  border: 1px solid; cursor: pointer;
+}
+.pb-call  { background: rgba(249,115,22,0.2); border-color: rgba(249,115,22,0.4); color: #fb923c; }
+.pb-quote { background: rgba(249,115,22,0.1); border-color: rgba(249,115,22,0.25); color: #f97316; }
+
+.map-overlay-info {
+  position: absolute; bottom: 16px; left: 16px; right: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+}
+.map-location-pill {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(8,7,18,0.85); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px; padding: 6px 12px; font-size: 10px; color: #94a3b8;
+  backdrop-filter: blur(10px);
+}
+.map-result-count {
+  background: rgba(249,115,22,0.15); border: 1px solid rgba(249,115,22,0.3);
+  border-radius: 20px; padding: 5px 12px; font-size: 10px; color: #f97316; font-weight: 600;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   RESUMEVAULT
+═══════════════════════════════════════════════════════════ */
+.rv-wrap {
+  background: #080712;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  height: calc(100vh - 44px);
+}
+
+/* Left panel — form + AI tools */
+.rv-left {
+  border-right: 1px solid rgba(255,255,255,0.06);
+  overflow-y: auto; padding: 20px 18px;
+  display: flex; flex-direction: column; gap: 16px;
+  background: rgba(255,255,255,0.01);
+}
+.rv-left::-webkit-scrollbar { width: 3px; }
+.rv-left::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+.rv-logo { display: flex; align-items: center; gap-8px; margin-bottom: 4px; }
+.rv-logo-name { font-size: 16px; font-weight: 800; color: white; letter-spacing: -0.02em; }
+.rv-logo-badge {
+  font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 20px; margin-left: 8px;
+  background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.25);
+}
+
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-label {
+  font-size: 10px; font-weight: 600; color: #64748b;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.form-label .hint { font-size: 9px; color: #334155; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.form-input {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 9px 12px; color: white; font-size: 12px;
+  outline: none; transition: border-color 0.15s; resize: vertical;
+  font-family: inherit;
+}
+.form-input:focus { border-color: rgba(249,115,22,0.4); background: rgba(249,115,22,0.03); }
+.form-input::placeholder { color: #334155; }
+
+.jd-paste-area {
+  background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 10px 12px;
+  display: flex; align-items: center; gap-8px; cursor: pointer;
+  transition: all 0.15s;
+}
+.jd-paste-area:hover { border-color: rgba(249,115,22,0.3); background: rgba(249,115,22,0.03); }
+.jd-paste-icon { font-size: 18px; }
+.jd-paste-text { font-size: 11px; color: #475569; line-height: 1.4; }
+.jd-paste-text strong { color: #94a3b8; display: block; }
+
+/* JD Analysis chip row */
+.analysis-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.kw-match { font-size: 9px; padding: 2px 7px; border-radius: 4px; }
+.kw-hit  { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+.kw-miss { background: rgba(239,68,68,0.1);  color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+.match-score-bar {
+  background: rgba(255,255,255,0.05); border-radius: 3px; height: 5px; overflow: hidden;
+}
+.match-score-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  transition: width 0.8s ease;
+}
+
+/* AI Action buttons */
+.ai-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ai-action-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 8px; border-radius: 10px; cursor: pointer;
+  border: 1px solid; transition: all 0.15s; text-align: center;
+}
+.aab-resume  { background: rgba(249,115,22,0.1);  border-color: rgba(249,115,22,0.25); }
+.aab-cover   { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.2); }
+.aab-ats     { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.2); }
+.aab-prep    { background: rgba(139,92,246,0.08); border-color: rgba(139,92,246,0.2); }
+.aab-icon { font-size: 18px; }
+.aab-label { font-size: 9px; font-weight: 600; }
+.aab-resume .aab-label  { color: #fb923c; }
+.aab-cover  .aab-label  { color: #60a5fa; }
+.aab-ats    .aab-label  { color: #34d399; }
+.aab-prep   .aab-label  { color: #a78bfa; }
+.aab-desc { font-size: 8px; color: #475569; line-height: 1.3; }
+
+.gen-btn {
+  width: 100%; padding: 12px; border-radius: 12px; border: none;
+  background: linear-gradient(135deg, #ea580c, #f97316, #fb923c);
+  color: white; font-size: 13px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(249,115,22,0.25);
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.gen-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(249,115,22,0.35); }
+
+/* Right panel — live preview */
+.rv-right {
+  overflow-y: auto; background: #0f0a1e;
+  display: flex; flex-direction: column;
+}
+.rv-right::-webkit-scrollbar { width: 4px; }
+.rv-right::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+/* Preview tab bar */
+.preview-tabs {
+  display: flex; gap: 0; padding: 12px 20px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.01);
+  flex-shrink: 0;
+}
+.ptab {
+  padding: 8px 14px; font-size: 11px; font-weight: 600; color: #475569;
+  cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s;
+  display: flex; align-items: center; gap-5px;
+}
+.ptab.active { color: #f97316; border-bottom-color: #f97316; }
+
+/* The actual resume paper */
+.resume-paper-wrap {
+  flex: 1; padding: 24px; display: flex; justify-content: center; align-items: flex-start;
+}
+.resume-paper {
+  background: white; color: #1a1a2e;
+  width: 100%; max-width: 640px;
+  border-radius: 8px;
+  box-shadow: 0 8px 48px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+  overflow: hidden;
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+/* Resume header with gradient bar */
+.rp-header {
+  padding: 22px 24px 18px;
+  position: relative;
+}
+.rp-header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, hsl(187,74%,32%), hsl(270,70%,45%));
+}
+.rp-name {
+  font-size: 26px; font-weight: 700; color: #0f172a;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.02em; line-height: 1;
+}
+.rp-title { font-size: 12px; color: #64748b; margin-top: 4px; font-weight: 500; }
+.rp-contact {
+  display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px;
+  font-size: 10px; color: #64748b;
+}
+.rp-contact a { color: hsl(187,74%,28%); text-decoration: none; }
+
+/* ATS score overlay on paper */
+.ats-overlay {
+  position: absolute; top: 16px; right: 18px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.ats-ring { position: relative; width: 48px; height: 48px; }
+.ats-num {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; color: #0f172a;
+}
+
+.rp-body { padding: 16px 24px 24px; }
+.rp-section { margin-bottom: 16px; }
+.rp-section-title {
+  font-size: 9px; font-weight: 700; color: hsl(187,74%,28%);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  border-bottom: 1px solid hsl(187,50%,90%); padding-bottom: 4px; margin-bottom: 10px;
+}
+.rp-summary { font-size: 11px; color: #374151; line-height: 1.6; }
+
+.rp-job { margin-bottom: 12px; }
+.rp-job-header { display: flex; justify-content: space-between; align-items: baseline; }
+.rp-job-title { font-size: 12px; font-weight: 700; color: #0f172a; }
+.rp-job-dates { font-size: 9px; color: #9ca3af; }
+.rp-job-company { font-size: 10px; color: #64748b; margin-bottom: 5px; }
+.rp-bullet {
+  font-size: 10px; color: #374151; line-height: 1.55;
+  padding-left: 12px; position: relative; margin-bottom: 3px;
+}
+.rp-bullet::before {
+  content: '▸'; position: absolute; left: 0;
+  color: hsl(187,74%,32%); font-size: 8px; top: 1px;
+}
+.rp-bullet .kw { color: hsl(187,60%,28%); font-weight: 600; }
+
+.skills-wrap { display: flex; flex-wrap: wrap; gap: 5px; }
+.skill-tag {
+  background: hsl(187,40%,94%); color: hsl(187,74%,25%);
+  border-radius: 4px; padding: 3px 8px; font-size: 9px; font-weight: 600;
+}
+.skill-tag.new { background: hsl(270,60%,94%); color: hsl(270,70%,38%); }
+
+/* Cover letter + prep panels */
+.cover-panel, .prep-panel {
+  flex: 1; padding: 24px; max-width: 640px; margin: 0 auto; width: 100%;
+}
+.cover-body {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px; padding: 20px; font-size: 12px; color: #94a3b8;
+  line-height: 1.8;
+}
+.cover-body p { margin-bottom: 12px; }
+.cover-body strong { color: #cbd5e1; }
+
+.prep-section { margin-bottom: 20px; }
+.prep-section h3 { font-size: 12px; font-weight: 700; color: white; margin-bottom: 10px; }
+.prep-q {
+  background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.15);
+  border-radius: 10px; padding: 12px 14px; margin-bottom: 8px;
+}
+.prep-q-text { font-size: 11px; color: #e2e8f0; font-weight: 600; margin-bottom: 5px; }
+.prep-q-cat  { font-size: 9px; color: #8b5cf6; font-weight: 600; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; }
+.prep-q-hint { font-size: 10px; color: #64748b; line-height: 1.5; }
+.salary-box {
+  background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.15);
+  border-radius: 10px; padding: 12px 14px;
+}
+.salary-range { font-size: 20px; font-weight: 800; color: #34d399; }
+.salary-label { font-size: 10px; color: #64748b; margin-top: 2px; }
+
+/* Saved session banner */
+.session-banner {
+  background: rgba(249,115,22,0.06); border: 1px solid rgba(249,115,22,0.15);
+  border-radius: 10px; padding: 8px 12px;
+  display: flex; align-items: center; gap-8px;
+  font-size: 10px; color: #94a3b8;
+}
+.session-banner strong { color: #f97316; margin-right: 4px; }
+
+/* AI typing cursor */
+.cursor { display: inline-block; width: 2px; height: 11px; background: #f97316; animation: blink 1s infinite; vertical-align: text-bottom; margin-left: 1px; }
+@keyframes blink { 0%,50% { opacity: 1; } 51%,100% { opacity: 0; } }
+
+/* ── MISC ── */
+.section-divider {
+  display: flex; align-items: center; gap: 10px; margin: 6px 0 8px;
+}
+.section-divider span { font-size: 9px; color: #334155; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+.section-divider::before, .section-divider::after {
+  content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.05);
+}
+
+</style>
+</head>
+<body>
+
+<nav class="page-nav">
+  <button class="nav-tab active" onclick="show('anylocal', this)">🗺 AnyLocal — Search Page</button>
+  <button class="nav-tab" onclick="show('resumevault', this)">📄 ResumeVault — Builder</button>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  TAB 1: ANYLOCAL                                          -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="anylocal" class="section active anylocal-wrap">
+
+  <!-- Sticky search bar -->
+  <div class="search-bar-sticky">
+    <div class="search-row">
+      <div class="search-input-wrap">
+        <span style="color:#f97316;font-size:13px;">🔍</span>
+        <input type="text" value="plumber near me" readonly>
+        <span style="color:#475569;font-size:10px;border-left:1px solid rgba(255,255,255,0.08);padding-left:8px;">📍 London</span>
+      </div>
+      <div class="filter-pill on">⚡ Open now</div>
+      <div class="filter-pill">⭐ 4.0+</div>
+      <div class="filter-pill">📍 &lt; 2 mi</div>
+      <div class="filter-pill">🔧 Trades only</div>
+    </div>
+  </div>
+
+  <!-- Split: results + map -->
+  <div class="split-main">
+
+    <!-- Left: results list -->
+    <div class="results-col">
+      <div class="results-header">
+        <span class="results-count"><strong>8 results</strong> for "plumber near me" in London</span>
+        <select class="sort-select">
+          <option>Sort: Trust score</option>
+          <option>Sort: Distance</option>
+          <option>Sort: Rating</option>
+        </select>
+      </div>
+
+      <!-- Card 1 — active, expanded AI summary -->
+      <div class="rcard active">
+        <div class="rcard-top">
+          <div class="rank-badge rank-1">#1</div>
+          <div style="flex:1;">
+            <div class="rcard-name">Ace Plumbers Ltd</div>
+            <div class="rcard-addr">📍 123 High St, Islington · 0.4 mi</div>
+          </div>
+          <span class="trust-badge tb-excellent">Excellent</span>
+        </div>
+        <div class="rcard-meta">
+          <span>⭐ <strong style="color:white">4.8</strong></span>
+          <span style="color:#64748b;">(312 reviews)</span>
+          <span class="meta-dot"></span>
+          <span class="open-pill">● Open now</span>
+          <span class="meta-dot"></span>
+          <span class="dist-pill">0.4 mi</span>
+        </div>
+        <div class="rcard-actions">
+          <div class="act-btn act-call">📞 020 7946 0958</div>
+          <div class="act-btn act-web">🌐 Website</div>
+          <div class="act-btn act-quote">💬 Get Quote</div>
+          <div class="act-btn act-ai" style="background:rgba(139,92,246,0.18);border-color:rgba(139,92,246,0.4);color:#c4b5fd;">🤖 AI ▴</div>
+        </div>
+        <!-- AI summary expanded -->
+        <div class="ai-expand">
+          <div class="ai-expand-label">🤖 AI Review Analysis · Based on 312 reviews</div>
+          <div class="ai-expand-text">
+            <span class="ai-highlight">Highly reliable</span> — customers consistently praise fast response times (same-day in 80%+ of reviews) and transparent pricing. Specialises in <span class="ai-highlight">boiler repairs and emergency call-outs</span>.
+            <span class="ai-warn"> One recurring complaint:</span> booking can be difficult on weekends — call ahead.
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="rcard">
+        <div class="rcard-top">
+          <div class="rank-badge rank-2">#2</div>
+          <div style="flex:1;">
+            <div class="rcard-name">City Plumbing Co</div>
+            <div class="rcard-addr">📍 45 Baker St, Marylebone · 0.7 mi</div>
+          </div>
+          <span class="trust-badge tb-good">Good</span>
+        </div>
+        <div class="rcard-meta">
+          <span>⭐ <strong style="color:white">4.5</strong></span>
+          <span style="color:#64748b;">(201 reviews)</span>
+          <span class="meta-dot"></span>
+          <span class="open-pill">● Open now</span>
+          <span class="meta-dot"></span>
+          <span class="dist-pill">0.7 mi</span>
+        </div>
+        <div class="rcard-actions">
+          <div class="act-btn act-call">📞 020 7946 1234</div>
+          <div class="act-btn act-quote">💬 Get Quote</div>
+          <div class="act-btn act-ai">🤖 AI summary</div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="rcard">
+        <div class="rcard-top">
+          <div class="rank-badge rank-3">#3</div>
+          <div style="flex:1;">
+            <div class="rcard-name">FastFix Plumbers</div>
+            <div class="rcard-addr">📍 78 Park Lane, Mayfair · 1.2 mi</div>
+          </div>
+          <span class="trust-badge tb-fair">Fair</span>
+        </div>
+        <div class="rcard-meta">
+          <span>⭐ <strong style="color:white">4.3</strong></span>
+          <span style="color:#64748b;">(98 reviews)</span>
+          <span class="meta-dot"></span>
+          <span class="closed-pill">● Closed</span>
+          <span class="meta-dot"></span>
+          <span class="dist-pill">1.2 mi</span>
+        </div>
+        <div class="rcard-actions">
+          <div class="act-btn act-call">📞 020 7000 5678</div>
+          <div class="act-btn act-web">🌐 Website</div>
+          <div class="act-btn act-quote">💬 Get Quote</div>
+          <div class="act-btn act-ai">🤖 AI summary</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right: map (always visible) -->
+    <div class="map-col">
+      <div class="map-bg"></div>
+      <svg class="map-roads" viewBox="0 0 600 500" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%;">
+        <path d="M0,150 Q150,130 300,160 Q450,190 600,150" stroke="#8b5cf6" stroke-width="2" fill="none"/>
+        <path d="M0,300 Q200,280 400,310 Q500,320 600,290" stroke="#8b5cf6" stroke-width="1.5" fill="none"/>
+        <path d="M200,0 Q220,150 210,300 Q200,400 215,500" stroke="#8b5cf6" stroke-width="1.5" fill="none"/>
+        <path d="M400,0 Q420,200 410,350 Q400,450 415,500" stroke="#8b5cf6" stroke-width="1" fill="none"/>
+        <path d="M0,80 L600,80" stroke="#8b5cf6" stroke-width="0.5" fill="none"/>
+        <path d="M100,0 L100,500" stroke="#8b5cf6" stroke-width="0.5" fill="none"/>
+      </svg>
+
+      <!-- Pin 1 active -->
+      <div class="map-pin p1"><span class="map-pin-n">1</span></div>
+      <!-- Popup -->
+      <div class="map-popup">
+        <div class="popup-name">Ace Plumbers Ltd</div>
+        <div class="popup-rating">⭐ 4.8 · 312 reviews</div>
+        <div class="popup-open">● Open now · 0.4 mi</div>
+        <div class="popup-actions">
+          <div class="popup-btn pb-call">📞 Call</div>
+          <div class="popup-btn pb-quote">💬 Quote</div>
+        </div>
+      </div>
+
+      <div class="map-pin p2"><span class="map-pin-n">2</span></div>
+      <div class="map-pin p3"><span class="map-pin-n">3</span></div>
+
+      <!-- Bottom overlay -->
+      <div class="map-overlay-info">
+        <div class="map-location-pill">📍 Your location: London, N1</div>
+        <div class="map-result-count">8 results nearby</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  TAB 2: RESUMEVAULT                                       -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="resumevault" class="section">
+<div class="rv-wrap">
+
+  <!-- Left: form -->
+  <div class="rv-left">
+    <div>
+      <span class="rv-logo-name">ResumeVault</span>
+      <span class="rv-logo-badge">ATS-Optimized</span>
+    </div>
+
+    <!-- Session restore -->
+    <div class="session-banner">
+      <span>💾</span>
+      <div><strong>Session restored.</strong> Your last job & experience are pre-filled.</div>
+    </div>
+
+    <div class="section-divider"><span>Your Details</span></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div class="form-field">
+        <label class="form-label">Full name</label>
+        <input class="form-input" type="text" value="John Smith" readonly style="height:36px;">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Current title</label>
+        <input class="form-input" type="text" value="Senior Engineer" readonly style="height:36px;">
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">
+        Job description
+        <span class="hint">Paste or drop JD URL</span>
+      </label>
+      <div class="jd-paste-area">
+        <span class="jd-paste-icon">📋</span>
+        <div class="jd-paste-text">
+          <strong>Stripe — Staff Software Engineer</strong>
+          Distributed systems, 7+ yrs, Go/Python, payments infra... <span style="color:#334155;">(truncated)</span>
+        </div>
+      </div>
+      <!-- JD keyword analysis -->
+      <div style="margin-top:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+          <span style="font-size:9px;color:#475569;">JD keyword match</span>
+          <span style="font-size:10px;font-weight:700;color:#34d399;">78% match</span>
+        </div>
+        <div class="match-score-bar"><div class="match-score-fill" style="width:78%"></div></div>
+        <div class="analysis-chips" style="margin-top:6px;">
+          <span class="kw-match kw-hit">✓ distributed systems</span>
+          <span class="kw-match kw-hit">✓ Go</span>
+          <span class="kw-match kw-hit">✓ payments</span>
+          <span class="kw-match kw-miss">✗ Kafka</span>
+          <span class="kw-match kw-miss">✗ staff-level scope</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Experience summary</label>
+      <textarea class="form-input" rows="4" readonly>6 years backend at Google & Monzo. Built payments microservices handling 10M+ daily txns. Led team of 8. Distributed systems, Go, Python, Redis, k8s.</textarea>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Skills <span class="hint">comma-separated</span></label>
+      <input class="form-input" type="text" value="Go, Python, Redis, Kubernetes, PostgreSQL, gRPC, Kafka" readonly style="height:36px;">
+    </div>
+
+    <div class="section-divider"><span>AI Tools</span></div>
+
+    <div class="ai-actions">
+      <div class="ai-action-btn aab-resume">
+        <span class="aab-icon">📄</span>
+        <span class="aab-label">Build Resume</span>
+        <span class="aab-desc">Tailored to JD · ATS bullets · keyword-injected</span>
+      </div>
+      <div class="ai-action-btn aab-cover">
+        <span class="aab-icon">✉️</span>
+        <span class="aab-label">Cover Letter</span>
+        <span class="aab-desc">Personalised opener + value prop + CTA</span>
+      </div>
+      <div class="ai-action-btn aab-ats">
+        <span class="aab-icon">📊</span>
+        <span class="aab-label">ATS Score</span>
+        <span class="aab-desc">Score + gap analysis + fix suggestions</span>
+      </div>
+      <div class="ai-action-btn aab-prep">
+        <span class="aab-icon">🎯</span>
+        <span class="aab-label">Interview Prep</span>
+        <span class="aab-desc">Role-specific Qs + STAR frameworks + salary</span>
+      </div>
+    </div>
+
+    <button class="gen-btn">⚡ Generate All — Resume + Cover + Prep</button>
+
+    <div style="text-align:center;font-size:9px;color:#334155;margin-top:4px;">
+      PDF download included · Space Grotesk template · Auto-saves
+    </div>
+
+  </div>
+
+  <!-- Right: live preview -->
+  <div class="rv-right">
+    <div class="preview-tabs">
+      <div class="ptab active" onclick="showTab('resume',this)">📄 Resume Preview</div>
+      <div class="ptab" onclick="showTab('cover',this)">✉️ Cover Letter</div>
+      <div class="ptab" onclick="showTab('prep',this)">🎯 Interview Prep</div>
+    </div>
+
+    <!-- Resume preview -->
+    <div id="tab-resume" class="resume-paper-wrap">
+      <div class="resume-paper">
+        <!-- Header -->
+        <div class="rp-header" style="position:relative;">
+          <div class="rp-name">John Smith</div>
+          <div class="rp-title">Senior Software Engineer — Payments & Distributed Systems</div>
+          <div class="rp-contact">
+            <span>john@email.com</span>
+            <span>📍 London, UK</span>
+            <span><a href="#">linkedin.com/in/johnsmith</a></span>
+            <span><a href="#">github.com/jsmith</a></span>
+          </div>
+          <!-- ATS score ring -->
+          <div class="ats-overlay">
+            <svg viewBox="0 0 48 48" width="48" height="48">
+              <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="5"/>
+              <circle cx="24" cy="24" r="20" fill="none" stroke="#10b981" stroke-width="5"
+                stroke-dasharray="100.5" stroke-dashoffset="22"
+                stroke-linecap="round" transform="rotate(-90 24 24)"/>
+            </svg>
+            <div class="ats-num">78</div>
+          </div>
+        </div>
+
+        <div class="rp-body">
+          <div class="rp-section">
+            <div class="rp-section-title">Professional Summary</div>
+            <div class="rp-summary">
+              Backend engineer with 6+ years building payment infrastructure and
+              <span style="color:hsl(187,74%,28%);font-weight:600;">distributed systems</span> at scale.
+              Led cross-functional teams delivering products used by millions. Deep expertise in
+              <span style="color:hsl(187,74%,28%);font-weight:600;">Go</span>,
+              <span style="color:hsl(187,74%,28%);font-weight:600;">Kubernetes</span>, and
+              high-throughput data pipelines.
+              <span style="color:#8b5cf6;cursor:pointer;" title="AI added — matches JD requirement"> [+ staff-level scope added ✨]</span>
+            </div>
+          </div>
+
+          <div class="rp-section">
+            <div class="rp-section-title">Experience</div>
+            <div class="rp-job">
+              <div class="rp-job-header">
+                <div class="rp-job-title">Senior Backend Engineer</div>
+                <div class="rp-job-dates">Jan 2022 – Mar 2024</div>
+              </div>
+              <div class="rp-job-company">Google · London, UK</div>
+              <div class="rp-bullet">Architected <span class="kw">distributed payments microservices</span> processing 10M+ daily transactions with 99.99% uptime</div>
+              <div class="rp-bullet">Reduced P99 API latency by 40% via multi-tier caching using <span class="kw">Redis</span> + CDN edge routing</div>
+              <div class="rp-bullet">Led team of 8 engineers; introduced TDD and CI/CD pipelines — reduced deploy cycle from 2 days to 4 hours</div>
+              <div class="rp-bullet" style="color:#8b5cf6;font-size:9px;cursor:pointer;">✨ AI added: "Scaled <span class="kw">Kafka</span> event pipeline to handle 50K msg/s..." — click to approve</div>
+            </div>
+            <div class="rp-job">
+              <div class="rp-job-header">
+                <div class="rp-job-title">Backend Engineer</div>
+                <div class="rp-job-dates">Jun 2020 – Dec 2021</div>
+              </div>
+              <div class="rp-job-company">Monzo Bank · London, UK</div>
+              <div class="rp-bullet">Built card fraud detection service in <span class="kw">Go</span> — blocked £2.4M in fraudulent transactions in first quarter</div>
+              <div class="rp-bullet">Migrated monolith to <span class="kw">Kubernetes</span>-based microservices, enabling 10x faster feature delivery</div>
+            </div>
+          </div>
+
+          <div class="rp-section">
+            <div class="rp-section-title">Skills</div>
+            <div class="skills-wrap">
+              <span class="skill-tag">Go</span>
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">Distributed Systems</span>
+              <span class="skill-tag">Redis</span>
+              <span class="skill-tag">Kubernetes</span>
+              <span class="skill-tag">PostgreSQL</span>
+              <span class="skill-tag">gRPC</span>
+              <span class="skill-tag new">Kafka ✨</span>
+              <span class="skill-tag new">Staff-level ✨</span>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;margin-top:16px;gap:6px;">
+            <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:7px;padding:5px 12px;font-size:10px;color:#34d399;cursor:pointer;">⬇ Download PDF</div>
+            <div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.2);border-radius:7px;padding:5px 12px;font-size:10px;color:#f97316;cursor:pointer;">🔄 Regenerate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cover letter preview -->
+    <div id="tab-cover" class="cover-panel" style="display:none;">
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:white;margin-bottom:4px;">Cover Letter — Stripe Staff Engineer</div>
+        <div style="font-size:10px;color:#475569;">AI-generated · tailored to JD · includes your key metrics</div>
+      </div>
+      <div class="cover-body">
+        <p>Dear Hiring Team,</p>
+        <p>I'm applying for the <strong>Staff Software Engineer — Payments</strong> role at Stripe. With 6+ years building payment infrastructure handling tens of millions of daily transactions at Google and Monzo, I'm drawn to Stripe's mission to increase the GDP of the internet.</p>
+        <p>At Google, I architected the distributed payments microservices layer that now processes <strong>10M+ transactions per day</strong>. I reduced P99 latency by 40% and led the team through an incident that threatened a £2M/day revenue stream — resolved in under 4 hours through systematic debugging.</p>
+        <p>What excites me about this role is the challenge of working at Stripe's scale on infrastructure that touches every internet business. I bring the technical depth (Go, Kafka, Kubernetes, gRPC) and the staff-level instinct for making the right architectural trade-offs under pressure.</p>
+        <p>I'd welcome the chance to discuss how my background maps to what you're building.<br>
+        <strong>John Smith</strong> · john@email.com</p>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:6px;">
+        <div style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:7px;padding:5px 12px;font-size:10px;color:#60a5fa;cursor:pointer;">⬇ Download PDF</div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:5px 12px;font-size:10px;color:#94a3b8;cursor:pointer;">📋 Copy text</div>
+      </div>
+    </div>
+
+    <!-- Interview prep -->
+    <div id="tab-prep" class="prep-panel" style="display:none;">
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:white;margin-bottom:4px;">Interview Prep — Stripe Staff Engineer</div>
+        <div style="font-size:10px;color:#475569;">AI-generated · role-specific · STAR frameworks</div>
+      </div>
+
+      <div class="prep-section">
+        <h3>📊 Salary Research</h3>
+        <div class="salary-box">
+          <div class="salary-range">£140,000 – £185,000</div>
+          <div class="salary-label">+ equity (0.1–0.3%) + bonus · Staff Engineer L6 · London, 2024</div>
+        </div>
+      </div>
+
+      <div class="prep-section">
+        <h3>🎯 Likely Questions</h3>
+        <div class="prep-q">
+          <div class="prep-q-cat">System Design</div>
+          <div class="prep-q-text">Design a payment processing system that handles 10M transactions/day with 99.99% uptime.</div>
+          <div class="prep-q-hint">Framework: Start with requirements, then work through data flow, failure modes, consistency vs. availability trade-offs. Mention your Google experience directly.</div>
+        </div>
+        <div class="prep-q">
+          <div class="prep-q-cat">Behavioural — Leadership</div>
+          <div class="prep-q-text">Tell me about a time you had to make a difficult technical decision under time pressure.</div>
+          <div class="prep-q-hint">Use the incident where you resolved the £2M/day revenue threat in 4 hours. Hit: situation, your analysis, decision, outcome.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+function showTab(id, btn) {
+  ['resume','cover','prep'].forEach(t => {
+    const el = document.getElementById('tab-'+t);
+    if (el) el.style.display = t === id ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.ptab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (id === 'resume') document.getElementById('tab-resume').style.display = 'flex';
+}
+</script>
+</body>
+</html>

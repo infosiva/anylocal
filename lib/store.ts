@@ -6,7 +6,7 @@ export { useMagicAuth, getStoredUser, isLoggedIn };
 export const SITE_CONFIG = {
   name: "AnyLocal",
   site: "anylocal",
-  accentColor: "#f97316",
+  accentColor: "#f0bc42",
   freeLimit: 5,
   freeFeature: "free searches",
   lockedFeature: "unlimited searches + saved places",

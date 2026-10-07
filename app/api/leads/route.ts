@@ -72,13 +72,13 @@ export async function POST(req: NextRequest) {
       subject: `Your quote request has been sent — ${businesses.map(b => b.name).join(', ')}`,
       html: `
         <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
-          <h2 style="color:#f97316;">Your quote request is on its way</h2>
+          <h2 style="color:#f0bc42;">Your quote request is on its way</h2>
           <p>Hi ${name},</p>
           <p>We've sent your job details to <strong>${businesses.length} business${businesses.length > 1 ? 'es' : ''}</strong>:</p>
           <ul>
             ${businesses.map(b => `<li><strong>${b.name}</strong>${b.phone ? ` — ${b.phone}` : ''}</li>`).join('')}
           </ul>
-          <div style="background:#fff8f0;border-left:4px solid #f97316;padding:16px;margin:20px 0;border-radius:4px;">
+          <div style="background:#fff8f0;border-left:4px solid #f0bc42;padding:16px;margin:20px 0;border-radius:4px;">
             <strong>Your job:</strong><br/>${jobDescription}
             ${postcode ? `<br/><strong>Postcode:</strong> ${postcode}` : ''}
           </div>
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
       subject: `New lead: ${jobDescription.slice(0, 60)} — ${businesses.length} businesses`,
       html: `
         <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
-          <h2 style="color:#f97316;">New Quote Request</h2>
+          <h2 style="color:#f0bc42;">New Quote Request</h2>
           <table style="width:100%;border-collapse:collapse;">
             <tr><td style="padding:6px 0;color:#888;width:120px;">Name</td><td><strong>${name}</strong></td></tr>
             <tr><td style="padding:6px 0;color:#888;">Email</td><td>${email}</td></tr>

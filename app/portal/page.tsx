@@ -112,12 +112,12 @@ function PortalInner() {
             value={input}
             onChange={e => setInput(e.target.value)}
             placeholder="Your email address"
-            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-orange-500/50 text-sm"
+            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#f0bc42]/50 text-sm"
             required
           />
           <button
             type="submit"
-            className="bg-orange-500 hover:bg-orange-400 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors"
+            className="bg-[#f0bc42] hover:bg-[#f0bc42] text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors"
           >
             View my quotes
           </button>
@@ -272,7 +272,7 @@ function LeadCard({ lead, onTag, tagging }: {
             href={`https://wa.me/?text=${encodeURIComponent(`Hi, I got your quote response on AnyLocal for: ${lead.job_description}`)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-orange-400 hover:text-orange-300 transition-colors"
+            className="text-xs text-[#f0bc42] hover:text-[#f0bc42] transition-colors"
           >
             Share response →
           </a>

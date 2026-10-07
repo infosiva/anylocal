@@ -111,8 +111,8 @@ export default function ResultCard({ place, rank, userLat, userLng, active, onRe
       aria-pressed={active}
       className={`bg-white/[0.03] border rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer
         ${active
-          ? 'border-orange-500/50 ring-1 ring-orange-500/30 bg-orange-500/[0.04]'
-          : 'border-white/[0.06] hover:border-orange-500/20'
+          ? 'border-[#f0bc42]/50 ring-1 ring-[#f0bc42]/30 bg-[#f0bc42]/[0.04]'
+          : 'border-white/[0.06] hover:border-[#f0bc42]/20'
         }`}
     >
       <div className="p-5">
@@ -159,7 +159,7 @@ export default function ResultCard({ place, rank, userLat, userLng, active, onRe
                 <a
                   href={`tel:${place.phone}`}
                   onClick={e => e.stopPropagation()}
-                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-orange-500/15 border border-orange-500/25 text-orange-300 hover:bg-orange-500/25 transition-colors"
+                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-[#f0bc42]/15 border border-[#f0bc42]/25 text-[#f0bc42] hover:bg-[#f0bc42]/25 transition-colors"
                 >
                   <Phone size={12} /> {place.phone}
                 </a>
@@ -186,7 +186,7 @@ export default function ResultCard({ place, rank, userLat, userLng, active, onRe
               )}
               <button
                 onClick={e => { e.stopPropagation(); onRequestQuote(place) }}
-                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-orange-500/20 border border-orange-500/35 text-orange-300 hover:bg-orange-500/30 font-semibold transition-colors"
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-[#f0bc42]/20 border border-[#f0bc42]/35 text-[#f0bc42] hover:bg-[#f0bc42]/30 font-semibold transition-colors"
               >
                 <MessageSquarePlus size={12} /> Get quote
               </button>

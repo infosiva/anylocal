@@ -63,6 +63,8 @@ export default function AuthButton() {
         style={{
           fontSize: "12px",
           fontWeight: 600,
+          whiteSpace: "nowrap",
+          minHeight: 44,
           padding: "6px 14px",
           borderRadius: "8px",
           border: `1px solid ${SITE_CONFIG.accentColor}55`,
@@ -91,7 +93,9 @@ export default function AuthButton() {
             cursor: "pointer",
             padding: "4px 6px",
             textDecoration: "underline",
+            whiteSpace: "nowrap",
           }}
+          className="al-hide-sm"
         >
           Have a code?
         </button>

@@ -181,7 +181,7 @@ function SearchPageInner() {
                 onChange={e => setQuery(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && doSearch(query)}
                 placeholder="Search tradespeople, services..."
-                className="w-full bg-white/[0.06] border border-white/[0.10] rounded-xl pl-9 pr-4 py-2.5 text-white placeholder-white/30 text-sm focus:outline-none focus:border-orange-500/40"
+                className="w-full bg-white/[0.06] border border-white/[0.10] rounded-xl pl-9 pr-4 py-2.5 text-white placeholder-white/30 text-sm focus:outline-none focus:border-[#f0bc42]/40"
               />
             </div>
             <button
@@ -193,7 +193,7 @@ function SearchPageInner() {
             <button
               onClick={() => doSearch(query)}
               disabled={loading}
-              className="px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50"
+              className="px-4 py-2.5 bg-[#f0bc42] hover:bg-[#f0bc42] text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50"
             >
               {loading ? '...' : 'Search'}
             </button>
@@ -216,7 +216,7 @@ function SearchPageInner() {
             <select
               value={sortBy}
               onChange={e => setSortBy(e.target.value as 'relevance' | 'distance' | 'rating')}
-              className="text-xs px-3 py-1.5 rounded-full border bg-white/[0.04] border-white/[0.08] text-white/50 focus:outline-none focus:border-orange-500/30"
+              className="text-xs px-3 py-1.5 rounded-full border bg-white/[0.04] border-white/[0.08] text-white/50 focus:outline-none focus:border-[#f0bc42]/30"
             >
               <option value="relevance">Sort: Relevance</option>
               <option value="distance">Sort: Distance</option>
@@ -238,7 +238,7 @@ function SearchPageInner() {
         <div className="md:hidden px-4 py-4 space-y-3">
           {loading && (
             <div className="flex items-center gap-3 text-white/40 text-sm py-8 justify-center">
-              <div className="w-4 h-4 rounded-full border-2 border-orange-500/60 border-t-transparent animate-spin" />
+              <div className="w-4 h-4 rounded-full border-2 border-[#f0bc42]/60 border-t-transparent animate-spin" />
               Searching...
             </div>
           )}
@@ -275,7 +275,7 @@ function SearchPageInner() {
               <div className="h-full overflow-y-auto px-4 py-4 space-y-3">
                 {loading && (
                   <div className="flex items-center gap-3 text-white/40 text-sm py-8 justify-center">
-                    <div className="w-4 h-4 rounded-full border-2 border-orange-500/60 border-t-transparent animate-spin" />
+                    <div className="w-4 h-4 rounded-full border-2 border-[#f0bc42]/60 border-t-transparent animate-spin" />
                     Searching...
                   </div>
                 )}
@@ -307,7 +307,7 @@ function SearchPageInner() {
             </Panel>
 
             <PanelResizeHandle className="w-1.5 mx-0.5 flex items-center justify-center group cursor-col-resize">
-              <div className="w-1 h-12 rounded-full bg-white/[0.08] group-hover:bg-orange-500/40 transition-colors" />
+              <div className="w-1 h-12 rounded-full bg-white/[0.08] group-hover:bg-[#f0bc42]/40 transition-colors" />
             </PanelResizeHandle>
 
             <Panel defaultSize={65} minSize={40}>

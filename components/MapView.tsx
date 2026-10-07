@@ -67,7 +67,7 @@ export default function MapView({ results, activeId, onPinClick }: Props) {
           popupAnchor: [0, -36],
           html: `<div style="
             width:32px;height:32px;
-            background:${isTop ? '#f97316' : highlighted ? '#a855f7' : '#6b7280'};
+            background:${isTop ? '#f0bc42' : highlighted ? '#a855f7' : '#6b7280'};
             border:${highlighted ? '3px solid white' : '2px solid white'};
             border-radius:50% 50% 50% 0;
             transform:rotate(-45deg);
@@ -84,7 +84,7 @@ export default function MapView({ results, activeId, onPinClick }: Props) {
             ${place.rating > 0 ? `<div style="font-size:12px;margin-bottom:4px;">⭐ ${place.rating.toFixed(1)} (${place.reviews.toLocaleString()} reviews)</div>` : ''}
             ${place.open === true  ? '<div style="font-size:11px;color:#22c55e;margin-bottom:4px;">● Open now</div>' : ''}
             ${place.open === false ? '<div style="font-size:11px;color:#ef4444;margin-bottom:4px;">● Closed</div>'   : ''}
-            ${place.phone   ? `<div style="margin-top:4px;"><a href="tel:${place.phone}" style="font-size:12px;color:#f97316;">${place.phone}</a></div>` : ''}
+            ${place.phone   ? `<div style="margin-top:4px;"><a href="tel:${place.phone}" style="font-size:12px;color:#f0bc42;">${place.phone}</a></div>` : ''}
             ${place.website ? `<div style="margin-top:4px;"><a href="${place.website}" target="_blank" style="font-size:12px;color:#3b82f6;">Visit website →</a></div>` : ''}
           </div>`
 

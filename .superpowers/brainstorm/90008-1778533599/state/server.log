@@ -1,0 +1,5 @@
+{"type":"server-started","port":62645,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:62645","screen_dir":"/Users/sivaprakasam/projects/agents/tradespot/.superpowers/brainstorm/90008-1778533599/content","state_dir":"/Users/sivaprakasam/projects/agents/tradespot/.superpowers/brainstorm/90008-1778533599/state"}
+{"type":"screen-added","file":"/Users/sivaprakasam/projects/agents/tradespot/.superpowers/brainstorm/90008-1778533599/content/search-layout.html"}
+{"type":"screen-added","file":"/Users/sivaprakasam/projects/agents/tradespot/.superpowers/brainstorm/90008-1778533599/content/two-products.html"}
+{"type":"screen-added","file":"/Users/sivaprakasam/projects/agents/tradespot/.superpowers/brainstorm/90008-1778533599/content/full-designs.html"}
+{"type":"server-stopped","reason":"idle timeout"}

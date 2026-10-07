@@ -51,8 +51,8 @@ const BENEFITS = [
   },
   {
     icon: <Zap size={20} />,
-    title: '£15/month — less than one call-out',
-    desc: 'Less than the cost of a single call-out charge. One extra job per month from AnyLocal and it pays for itself many times over.',
+    title: 'Free to list today',
+    desc: 'Listing and quote requests are free. A £15/month Pro tier is planned; you will be told before any charge.',
   },
 ]
 
@@ -122,30 +122,30 @@ export default function ForBusinessesPage() {
 
       {/* ── HERO ──────────────────────────────────────────── */}
       <section className="relative px-6 pt-20 pb-20 max-w-5xl mx-auto text-center">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full opacity-20 blur-3xl -z-10 bg-gradient-to-br from-orange-600 to-amber-400" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full opacity-20 blur-3xl -z-10 bg-gradient-to-br from-[#f0bc42] to-amber-400" />
 
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 text-xs font-medium mb-6">
-          <Zap size={12} /> For Tradespeople — 30 days free, then £15/month
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#f0bc42]/20 text-[#f0bc42] border border-[#f0bc42]/30 text-xs font-medium mb-6">
+          <Zap size={12} /> For Tradespeople — free to list, 0% commission
         </div>
 
         <h1 className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight mb-4">
           <span className="text-white">Get more local jobs.</span>
           <br />
-          <span className="bg-gradient-to-r from-orange-400 to-amber-200 bg-clip-text text-transparent">Keep every penny.</span>
+          <span className="bg-gradient-to-r from-[#f0bc42] to-amber-200 bg-clip-text text-transparent">Keep every penny.</span>
         </h1>
 
         <p className="text-white/55 text-lg mb-8 max-w-2xl mx-auto leading-relaxed">
           AnyLocal connects homeowners and businesses with trusted local tradespeople — no booking fees, no commission.
-          You pay £15/month. Every job you win is 100% yours.
+          Listing is free while we build. Pro (£15/month) is planned for priority ranking and is not billed yet.
         </p>
 
         <div className="flex flex-wrap justify-center gap-3 mb-10">
-          {['✓ 30 days free — no card needed', '✓ 0% commission on every job', '✓ Direct leads by email', '✓ Cancel any time'].map(t => (
+          {['✓ Free to list — no card', '✓ 0% commission on every job', '✓ Quote requests by email'].map(t => (
             <span key={t} className="text-sm text-white/70 bg-white/[0.05] border border-white/[0.08] px-4 py-1.5 rounded-full">{t}</span>
           ))}
         </div>
 
-        <a href="#register" className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-white bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-700 hover:to-orange-500 transition-all shadow-lg shadow-orange-500/25 text-base">
+        <a href="#register" className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-[#1c1503] bg-gradient-to-r from-[#f0bc42] to-[#f0bc42] hover:from-[#f0bc42] hover:to-[#f0bc42] transition-all shadow-lg shadow-[#f0bc42]/25 text-base">
           List your trade free <ArrowRight size={18} />
         </a>
       </section>
@@ -155,12 +155,12 @@ export default function ForBusinessesPage() {
         <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
             { n: '0%',    l: 'Commission on jobs' },
-            { n: '£15',   l: 'Per month after trial' },
-            { n: '30',    l: 'Days free listing' },
-            { n: '< 24h', l: 'To go live' },
+            { n: '£0',    l: 'To list today' },
+            { n: '100%',  l: 'Of every job is yours' },
+            { n: 'Email', l: 'Quote requests to your inbox' },
           ].map(s => (
             <div key={s.l}>
-              <div className="text-3xl font-extrabold bg-gradient-to-r from-orange-400 to-amber-200 bg-clip-text text-transparent">{s.n}</div>
+              <div className="text-3xl font-extrabold bg-gradient-to-r from-[#f0bc42] to-amber-200 bg-clip-text text-transparent">{s.n}</div>
               <div className="text-white/45 text-sm mt-1">{s.l}</div>
             </div>
           ))}
@@ -176,7 +176,7 @@ export default function ForBusinessesPage() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {BENEFITS.map(b => (
             <div key={b.title} className="bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm rounded-2xl p-5 flex gap-4 items-start">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400">
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[#f0bc42]/10 border border-[#f0bc42]/20 flex items-center justify-center text-[#f0bc42]">
                 {b.icon}
               </div>
               <div>
@@ -199,9 +199,9 @@ export default function ForBusinessesPage() {
             {STEPS.map((s, i) => (
               <div key={s.n} className="text-center relative">
                 {i < STEPS.length - 1 && (
-                  <div className="hidden md:block absolute top-6 left-[calc(50%+28px)] right-0 h-px bg-gradient-to-r from-orange-500/40 to-transparent" />
+                  <div className="hidden md:block absolute top-6 left-[calc(50%+28px)] right-0 h-px bg-gradient-to-r from-[#f0bc42]/40 to-transparent" />
                 )}
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-600 to-orange-400 flex items-center justify-center text-white font-extrabold text-lg mx-auto mb-4 relative z-10">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#f0bc42] to-[#f0bc42] flex items-center justify-center text-[#1c1503] font-extrabold text-lg mx-auto mb-4 relative z-10">
                   {s.n}
                 </div>
                 <h4 className="font-bold text-white text-sm mb-2">{s.title}</h4>
@@ -216,44 +216,44 @@ export default function ForBusinessesPage() {
       <section className="py-20 px-6 max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-white mb-3">Simple pricing</h2>
-          <p className="text-white/45">No surprises. No commission. Cancel any time.</p>
+          <p className="text-white/45">Free today. Pro is planned and not billed yet.</p>
         </div>
         <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
           {/* Free trial */}
           <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-7">
             <div className="text-white/40 text-xs uppercase tracking-widest font-bold mb-3">Free trial</div>
             <div className="text-4xl font-extrabold text-white mb-1">£0</div>
-            <div className="text-white/40 text-sm mb-5">for 30 days — no card needed</div>
+            <div className="text-white/40 text-sm mb-5">forever, no card needed</div>
             <ul className="space-y-2.5">
-              {['Full profile listing', 'Appear in search results', 'Receive quote requests', 'Email leads delivered', 'AI review summary active'].map(f => (
+              {['Business listing', 'Appear in search results', 'Receive quote requests', 'Leads emailed to you', 'AI review summary'].map(f => (
                 <li key={f} className="flex items-center gap-2 text-sm text-white/70">
-                  <CheckCircle size={14} className="text-orange-400 flex-shrink-0" /> {f}
+                  <CheckCircle size={14} className="text-[#f0bc42] flex-shrink-0" /> {f}
                 </li>
               ))}
             </ul>
           </div>
           {/* Pro */}
-          <div className="bg-gradient-to-br from-orange-600/15 to-amber-500/10 border border-orange-500/30 rounded-2xl p-7 relative">
+          <div className="bg-gradient-to-br from-[#f0bc42]/15 to-amber-500/10 border border-[#f0bc42]/30 rounded-2xl p-7 relative">
             <div className="absolute -top-3 left-6">
-              <span className="text-xs font-bold px-3 py-1 rounded-full bg-gradient-to-r from-orange-600 to-orange-400 text-white">Most popular</span>
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#f0bc42] text-[#1c1503]">Planned</span>
             </div>
-            <div className="text-orange-400 text-xs uppercase tracking-widest font-bold mb-3">Pro listing</div>
+            <div className="text-[#f0bc42] text-xs uppercase tracking-widest font-bold mb-3">Pro listing</div>
             <div className="text-4xl font-extrabold text-white mb-1">£15<span className="text-white/40 text-lg font-normal">/mo</span></div>
-            <div className="text-white/40 text-sm mb-5">after free trial — cancel any time</div>
+            <div className="text-white/40 text-sm mb-5">not billed yet — free for early listings</div>
             <ul className="space-y-2.5">
-              {['Everything in free', 'Priority ranking in search', 'Verified badge on listing', 'Direct phone calls shown', 'Unlimited leads', 'Monthly performance report'].map(f => (
+              {['Everything in Free', 'Priority ranking in search', 'Verified badge on listing'].map(f => (
                 <li key={f} className="flex items-center gap-2 text-sm text-white/80">
-                  <CheckCircle size={14} className="text-orange-400 flex-shrink-0" /> {f}
+                  <CheckCircle size={14} className="text-[#f0bc42] flex-shrink-0" /> {f}
                 </li>
               ))}
             </ul>
-            <a href="#register" className="mt-6 flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-white bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-700 hover:to-orange-500 transition-all shadow-lg shadow-orange-500/20">
-              Start free trial <ArrowRight size={16} />
+            <a href="#register" className="mt-6 flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-[#1c1503] bg-gradient-to-r from-[#f0bc42] to-[#f0bc42] hover:from-[#f0bc42] hover:to-[#f0bc42] transition-all shadow-lg shadow-[#f0bc42]/20">
+              List free now <ArrowRight size={16} />
             </a>
           </div>
         </div>
         <p className="text-center text-white/30 text-xs mt-6">
-          Less than a single call-out charge. One extra job covers it for months.
+          We will tell listed businesses before any charge starts.
         </p>
       </section>
 
@@ -261,28 +261,28 @@ export default function ForBusinessesPage() {
       <section id="register" className="py-20 px-6 bg-white/[0.02] border-t border-white/[0.06]">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-3">List your trade — free for 30 days</h2>
+            <h2 className="text-3xl font-bold text-white mb-3">List your trade — free</h2>
             <p className="text-white/45">Takes 2 minutes. No card required.</p>
           </div>
 
           {step === 'success' ? (
-            <div className="max-w-md mx-auto bg-white/[0.04] border border-orange-500/25 rounded-3xl p-10 text-center">
-              <div className="w-16 h-16 rounded-full bg-orange-500/15 flex items-center justify-center mx-auto mb-5">
-                <CheckCircle size={32} className="text-orange-400" />
+            <div className="max-w-md mx-auto bg-white/[0.04] border border-[#f0bc42]/25 rounded-3xl p-10 text-center">
+              <div className="w-16 h-16 rounded-full bg-[#f0bc42]/15 flex items-center justify-center mx-auto mb-5">
+                <CheckCircle size={32} className="text-[#f0bc42]" />
               </div>
               <h3 className="text-2xl font-extrabold text-white mb-2">You&apos;re registered, {bizName}!</h3>
               <p className="text-white/55 mb-4 text-sm leading-relaxed">
                 We&apos;ll verify and activate your listing within 24 hours. You&apos;ll get an email confirmation shortly.
               </p>
-              <div className="bg-orange-500/8 border border-orange-500/20 rounded-xl p-4 mb-6 text-left">
-                <p className="text-orange-400 text-xs font-bold uppercase tracking-wide mb-1">What happens next</p>
+              <div className="bg-[#f0bc42]/8 border border-[#f0bc42]/20 rounded-xl p-4 mb-6 text-left">
+                <p className="text-[#f0bc42] text-xs font-bold uppercase tracking-wide mb-1">What happens next</p>
                 <ul className="space-y-1 text-white/55 text-sm">
                   <li>✓ Confirmation email on its way to you</li>
                   <li>✓ Profile activated within 24 hours</li>
                   <li>✓ First lead notifications start immediately</li>
                 </ul>
               </div>
-              <Link href="/" className="text-orange-400 text-sm hover:text-orange-300 transition-colors">
+              <Link href="/" className="text-[#f0bc42] text-sm hover:text-[#f0bc42] transition-colors">
                 ← Back to AnyLocal
               </Link>
             </div>
@@ -294,7 +294,7 @@ export default function ForBusinessesPage() {
                 <div className="space-y-4">
                   {[
                     { icon: '🎯', t: 'Customers already searching', d: 'People search AnyLocal when they need a tradesperson right now — high intent, ready to book.' },
-                    { icon: '💰', t: '0% commission — forever', d: 'Urban Company, Checkatrade, MyBuilder all take 10–25% of your job. AnyLocal never does.' },
+                    { icon: '💰', t: '0% commission — forever', d: 'AnyLocal does not take a cut of the jobs you win.' },
                     { icon: '📧', t: 'Leads hit your inbox instantly', d: 'When a customer sends a quote request, you get the full details immediately — name, job, postcode, phone.' },
                     { icon: '⭐', t: 'Your Google reviews work for you', d: 'We pull and summarise your existing Google reviews. Better reviews = more clicks = more jobs.' },
                   ].map(item => (
@@ -306,15 +306,6 @@ export default function ForBusinessesPage() {
                       </div>
                     </div>
                   ))}
-                </div>
-                <div className="bg-amber-500/8 border border-amber-500/20 rounded-xl p-4">
-                  <p className="text-amber-400 text-xs font-bold uppercase tracking-wide mb-1">vs competitors</p>
-                  <div className="text-xs text-white/55 space-y-1">
-                    <div className="flex justify-between"><span>MyBuilder</span><span className="text-red-400">10–20% commission</span></div>
-                    <div className="flex justify-between"><span>Checkatrade</span><span className="text-red-400">£600–£1,200/year</span></div>
-                    <div className="flex justify-between"><span>Urban Company</span><span className="text-red-400">20–25% per job</span></div>
-                    <div className="flex justify-between font-bold"><span className="text-orange-400">AnyLocal</span><span className="text-orange-400">£15/month, 0% commission</span></div>
-                  </div>
                 </div>
               </div>
 
@@ -361,7 +352,7 @@ export default function ForBusinessesPage() {
                       <button key={t.id} type="button" onClick={() => toggleTrade(t.id)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                           form.trades.includes(t.id)
-                            ? 'bg-gradient-to-r from-orange-600 to-orange-400 text-white border-transparent'
+                            ? 'bg-gradient-to-r from-[#f0bc42] to-[#f0bc42] text-[#1c1503] border-transparent'
                             : 'border-white/10 text-white/50 hover:border-white/25'
                         }`}>
                         {t.label}
@@ -378,7 +369,7 @@ export default function ForBusinessesPage() {
                 </div>
 
                 <button type="submit" disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-700 hover:to-orange-500 transition-all shadow-lg shadow-orange-500/20 disabled:opacity-50">
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-[#1c1503] bg-gradient-to-r from-[#f0bc42] to-[#f0bc42] hover:from-[#f0bc42] hover:to-[#f0bc42] transition-all shadow-lg shadow-[#f0bc42]/20 disabled:opacity-50">
                   {loading ? (
                     <><div className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" /> Registering…</>
                   ) : (

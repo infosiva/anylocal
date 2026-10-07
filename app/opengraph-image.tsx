@@ -10,7 +10,7 @@ export default function Image() {
     (
       <div
         style={{
-          background: 'linear-gradient(135deg, #0a1628 0%, #0f2744 50%, #0a1628 100%)',
+          background: 'linear-gradient(135deg, #0f1419 0%, #1a2230 60%, #0f1419 100%)',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -24,10 +24,10 @@ export default function Image() {
         <div style={{ fontSize: 56, fontWeight: 900, color: '#ffffff', letterSpacing: '-1px', textAlign: 'center' }}>
           AnyLocal
         </div>
-        <div style={{ fontSize: 26, color: '#93c5fd', marginTop: 16, textAlign: 'center', maxWidth: 700 }}>
+        <div style={{ fontSize: 26, color: '#f0bc42', marginTop: 16, textAlign: 'center', maxWidth: 700 }}>
           Find Anything Near You — AI-Ranked Local Search
         </div>
-        <div style={{ fontSize: 18, color: '#bfdbfe', marginTop: 24, opacity: 0.8 }}>
+        <div style={{ fontSize: 18, color: '#fffbf5', marginTop: 24, opacity: 0.8 }}>
           anylocal.app
         </div>
       </div>

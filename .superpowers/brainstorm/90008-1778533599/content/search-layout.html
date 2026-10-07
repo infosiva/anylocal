@@ -1,0 +1,195 @@
+<h2>Search Page Layout</h2>
+<p class="subtitle">How should the map and results list be arranged on the search page?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#0f0a1e;border-radius:8px;">
+      <div style="display:flex;gap:8px;height:220px;">
+        <!-- Left: results list -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+          <div style="background:#1e1535;border:1px solid rgba(249,115,22,0.3);border-radius:8px;padding:10px;">
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+              <div style="width:22px;height:22px;background:#f97316;border-radius:5px;display:flex;align-items:center;justify-content:center;color:white;font-size:10px;font-weight:700;">#1</div>
+              <div>
+                <div style="color:white;font-size:11px;font-weight:600;">Ace Plumbers Ltd</div>
+                <div style="color:#888;font-size:9px;">⭐ 4.8 · 312 reviews</div>
+              </div>
+              <span style="margin-left:auto;background:#16a34a20;color:#4ade80;border:1px solid #16a34a40;border-radius:20px;font-size:8px;padding:2px 6px;">Excellent</span>
+            </div>
+            <div style="display:flex;gap:4px;">
+              <span style="background:#f97316;color:white;border-radius:5px;font-size:8px;padding:2px 8px;">📞 Call</span>
+              <span style="background:#1e293b;color:#94a3b8;border-radius:5px;font-size:8px;padding:2px 8px;">🌐 Web</span>
+              <span style="background:#f9731620;color:#fb923c;border-radius:5px;font-size:8px;padding:2px 8px;">💬 Quote</span>
+            </div>
+          </div>
+          <div style="background:#14101f;border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px;">
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div style="width:20px;height:20px;background:#374151;border-radius:5px;display:flex;align-items:center;justify-content:center;color:white;font-size:9px;">#2</div>
+              <div style="color:#d1d5db;font-size:10px;">City Plumbing Co</div>
+              <div style="color:#6b7280;font-size:9px;margin-left:auto;">⭐ 4.5</div>
+            </div>
+          </div>
+          <div style="background:#14101f;border:1px solid rgba(255,255,255,0.04);border-radius:8px;padding:8px;">
+            <div style="display:flex;gap:8px;align-items:center;">
+              <div style="width:20px;height:20px;background:#374151;border-radius:5px;display:flex;align-items:center;justify-content:center;color:white;font-size:9px;">#3</div>
+              <div style="color:#d1d5db;font-size:10px;">FastFix Plumbers</div>
+              <div style="color:#6b7280;font-size:9px;margin-left:auto;">⭐ 4.3</div>
+            </div>
+          </div>
+        </div>
+        <!-- Right: map always visible -->
+        <div style="flex:1;background:#1a1b2e;border-radius:8px;border:1px solid rgba(255,255,255,0.1);overflow:hidden;position:relative;">
+          <div style="background:#2a2d3e;height:100%;display:flex;align-items:center;justify-content:center;position:relative;">
+            <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#1e2235 25%,#252840 50%,#1e2235 75%);opacity:0.8;"></div>
+            <!-- fake map grid lines -->
+            <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.15" xmlns="http://www.w3.org/2000/svg">
+              <line x1="25%" y1="0" x2="25%" y2="100%" stroke="#888" stroke-width="1"/>
+              <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#888" stroke-width="1"/>
+              <line x1="75%" y1="0" x2="75%" y2="100%" stroke="#888" stroke-width="1"/>
+              <line x1="0" y1="33%" x2="100%" y2="33%" stroke="#888" stroke-width="1"/>
+              <line x1="0" y1="66%" x2="100%" y2="66%" stroke="#888" stroke-width="1"/>
+            </svg>
+            <!-- map pins -->
+            <div style="position:absolute;top:30%;left:40%;width:18px;height:18px;background:#f97316;border:2px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,0.5);">
+              <span style="transform:rotate(45deg);color:white;font-size:8px;font-weight:700;display:block;text-align:center;line-height:14px;">1</span>
+            </div>
+            <div style="position:absolute;top:50%;left:60%;width:16px;height:16px;background:#6b7280;border:2px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);">
+              <span style="transform:rotate(45deg);color:white;font-size:7px;display:block;text-align:center;line-height:12px;">2</span>
+            </div>
+            <div style="position:absolute;top:65%;left:30%;width:16px;height:16px;background:#6b7280;border:2px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);">
+              <span style="transform:rotate(45deg);color:white;font-size:7px;display:block;text-align:center;line-height:12px;">3</span>
+            </div>
+            <div style="color:#6b7280;font-size:10px;text-align:center;z-index:1;">Map (always visible)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Side-by-Side Split</h3>
+      <p>List left, map always visible right. No toggle needed. Click a result → highlights pin on map. Airbnb / Zillow style.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#0f0a1e;border-radius:8px;">
+      <div style="height:220px;display:flex;flex-direction:column;gap:6px;">
+        <!-- Map hero at top -->
+        <div style="height:120px;background:#1a1b2e;border-radius:8px;border:1px solid rgba(255,255,255,0.1);position:relative;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#1e2235,#252840);height:100%;position:relative;">
+            <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.15" xmlns="http://www.w3.org/2000/svg">
+              <line x1="20%" y1="0" x2="20%" y2="100%" stroke="#888" stroke-width="1"/>
+              <line x1="40%" y1="0" x2="40%" y2="100%" stroke="#888" stroke-width="1"/>
+              <line x1="60%" y1="0" x2="60%" y2="100%" stroke="#888" stroke-width="1"/>
+              <line x1="80%" y1="0" x2="80%" y2="100%" stroke="#888" stroke-width="1"/>
+              <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#888" stroke-width="1"/>
+            </svg>
+            <div style="position:absolute;top:25%;left:35%;width:18px;height:18px;background:#f97316;border:2px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,0.5);">
+              <span style="transform:rotate(45deg);color:white;font-size:8px;font-weight:700;display:block;text-align:center;line-height:14px;">1</span>
+            </div>
+            <div style="position:absolute;top:45%;left:55%;width:16px;height:16px;background:#6b7280;border:2px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);">
+              <span style="transform:rotate(45deg);color:white;font-size:7px;display:block;text-align:center;line-height:12px;">2</span>
+            </div>
+            <div style="position:absolute;top:60%;left:25%;width:16px;height:16px;background:#6b7280;border:2px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);">
+              <span style="transform:rotate(45deg);color:white;font-size:7px;display:block;text-align:center;line-height:12px;">3</span>
+            </div>
+            <!-- mini popup card on map -->
+            <div style="position:absolute;top:8%;left:40%;background:#1e1535;border:1px solid rgba(249,115,22,0.4);border-radius:6px;padding:4px 8px;white-space:nowrap;">
+              <div style="color:white;font-size:9px;font-weight:600;">Ace Plumbers</div>
+              <div style="color:#f97316;font-size:8px;">⭐ 4.8 · Open now</div>
+            </div>
+          </div>
+        </div>
+        <!-- Horizontal scrollable cards below -->
+        <div style="display:flex;gap:6px;overflow:hidden;">
+          <div style="min-width:130px;background:#1e1535;border:1px solid rgba(249,115,22,0.3);border-radius:8px;padding:8px;">
+            <div style="display:flex;gap:4px;align-items:center;margin-bottom:4px;">
+              <div style="width:16px;height:16px;background:#f97316;border-radius:4px;display:flex;align-items:center;justify-content:center;color:white;font-size:8px;font-weight:700;">1</div>
+              <div style="color:white;font-size:9px;font-weight:600;">Ace Plumbers</div>
+            </div>
+            <div style="color:#888;font-size:8px;">⭐ 4.8 (312) · Open</div>
+            <div style="margin-top:6px;display:flex;gap:3px;">
+              <span style="background:#f97316;color:white;border-radius:4px;font-size:7px;padding:2px 5px;">📞</span>
+              <span style="background:#f9731620;color:#fb923c;border-radius:4px;font-size:7px;padding:2px 5px;">💬</span>
+            </div>
+          </div>
+          <div style="min-width:120px;background:#14101f;border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px;">
+            <div style="display:flex;gap:4px;align-items:center;margin-bottom:4px;">
+              <div style="width:16px;height:16px;background:#374151;border-radius:4px;display:flex;align-items:center;justify-content:center;color:white;font-size:8px;">2</div>
+              <div style="color:#d1d5db;font-size:9px;">City Plumbing</div>
+            </div>
+            <div style="color:#888;font-size:8px;">⭐ 4.5 (201)</div>
+          </div>
+          <div style="min-width:120px;background:#14101f;border:1px solid rgba(255,255,255,0.04);border-radius:8px;padding:8px;">
+            <div style="display:flex;gap:4px;align-items:center;margin-bottom:4px;">
+              <div style="width:16px;height:16px;background:#374151;border-radius:4px;display:flex;align-items:center;justify-content:center;color:white;font-size:8px;">3</div>
+              <div style="color:#d1d5db;font-size:9px;">FastFix</div>
+            </div>
+            <div style="color:#888;font-size:8px;">⭐ 4.3 (98)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Map Hero + Card Strip</h3>
+      <p>Big map takes top 40–50% of screen. Results scroll horizontally below as cards. Hover card → pin pulses. Good for mobile feel.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#0f0a1e;border-radius:8px;">
+      <div style="height:220px;display:flex;flex-direction:column;gap:6px;">
+        <!-- Top bar with filters -->
+        <div style="display:flex;gap:6px;align-items:center;">
+          <div style="flex:1;background:#1e1535;border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:5px 8px;color:#888;font-size:9px;">🔍 plumber near me</div>
+          <div style="background:#1e293b;border-radius:6px;padding:5px 8px;color:#94a3b8;font-size:9px;">⚡ Open now</div>
+          <div style="background:#f9731620;border:1px solid rgba(249,115,22,0.3);border-radius:6px;padding:5px 8px;color:#f97316;font-size:9px;">🗺 Map</div>
+        </div>
+        <!-- Full list view -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:5px;overflow:hidden;">
+          <div style="background:#1e1535;border:1px solid rgba(249,115,22,0.3);border-radius:8px;padding:8px;display:flex;gap:8px;">
+            <div style="width:20px;height:20px;background:#f97316;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:white;font-size:9px;font-weight:700;">1</div>
+            <div style="flex:1;">
+              <div style="display:flex;justify-content:space-between;align-items:start;">
+                <div style="color:white;font-size:10px;font-weight:600;">Ace Plumbers Ltd</div>
+                <span style="background:#16a34a20;color:#4ade80;border:1px solid #16a34a40;border-radius:20px;font-size:7px;padding:1px 5px;">Excellent</span>
+              </div>
+              <div style="color:#888;font-size:8px;margin-top:2px;">⭐ 4.8 · 312 reviews · ✅ Open now · 📍 0.4 mi</div>
+              <div style="display:flex;gap:3px;margin-top:5px;">
+                <span style="background:#f97316;color:white;border-radius:4px;font-size:7px;padding:2px 6px;">📞 Call</span>
+                <span style="background:#1e293b;color:#94a3b8;border-radius:4px;font-size:7px;padding:2px 6px;">🌐 Web</span>
+                <span style="background:#f9731620;color:#fb923c;border:1px solid rgba(249,115,22,0.3);border-radius:4px;font-size:7px;padding:2px 6px;">💬 Get Quote</span>
+                <span style="background:#1e293b;color:#6b7280;border-radius:4px;font-size:7px;padding:2px 6px;">🤖 AI Review ▾</span>
+              </div>
+            </div>
+          </div>
+          <div style="background:#14101f;border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:7px;display:flex;gap:8px;">
+            <div style="width:18px;height:18px;background:#374151;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:white;font-size:8px;">2</div>
+            <div>
+              <div style="color:#d1d5db;font-size:10px;">City Plumbing Co</div>
+              <div style="color:#888;font-size:8px;margin-top:2px;">⭐ 4.5 · 201 reviews · 📍 0.7 mi</div>
+            </div>
+          </div>
+          <div style="background:#14101f;border:1px solid rgba(255,255,255,0.04);border-radius:8px;padding:7px;display:flex;gap:8px;">
+            <div style="width:18px;height:18px;background:#374151;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:white;font-size:8px;">3</div>
+            <div>
+              <div style="color:#d1d5db;font-size:10px;">FastFix Plumbers</div>
+              <div style="color:#888;font-size:8px;margin-top:2px;">⭐ 4.3 · 98 reviews · 📍 1.2 mi</div>
+            </div>
+          </div>
+        </div>
+        <!-- floating map toggle button -->
+        <div style="position:relative;height:0;">
+          <div style="position:absolute;bottom:10px;right:0;background:linear-gradient(135deg,#f97316,#fb923c);color:white;border-radius:20px;font-size:8px;padding:4px 10px;font-weight:600;box-shadow:0 2px 8px rgba(249,115,22,0.4);">🗺 Show Map</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Enhanced List + Floating Map Button</h3>
+      <p>Rich list is primary. Distance shown per result. Floating orange "Show Map" button opens map as full-screen overlay. Current direction, but much richer cards.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Click to select your preferred layout</p>

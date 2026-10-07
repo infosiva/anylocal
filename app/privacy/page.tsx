@@ -14,10 +14,10 @@ export default function PrivacyPage() {
       <p>We use Vercel for hosting and Google Analytics for anonymous usage statistics. These services have their own privacy policies.</p>
 
       <h2 style={{ fontSize: 20, fontWeight: 700, marginTop: 32 }}>Your rights</h2>
-      <p>You can request deletion of your account and data at any time by emailing <a href="mailto:hello@anylocal.app" style={{ color: '#0d9488' }}>hello@anylocal.app</a>.</p>
+      <p>You can request deletion of your account and data at any time by emailing <a href="mailto:hello@anylocal.app" style={{ color: '#f0bc42' }}>hello@anylocal.app</a>.</p>
 
       <h2 style={{ fontSize: 20, fontWeight: 700, marginTop: 32 }}>Contact</h2>
-      <p>Questions? Email <a href="mailto:hello@anylocal.app" style={{ color: '#0d9488' }}>hello@anylocal.app</a></p>
+      <p>Questions? Email <a href="mailto:hello@anylocal.app" style={{ color: '#f0bc42' }}>hello@anylocal.app</a></p>
     </main>
   )
 }

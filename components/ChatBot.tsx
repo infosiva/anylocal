@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 
 // LocalBot — orange theme, bottom-right, local search assistant
-const ACCENT = '#f97316'
+const ACCENT = '#f0bc42'
 const BOT_NAME = 'LocalBot'
 const WELCOME = "I'm LocalBot. Tell me what you need and where you are — I'll find trusted local businesses and tell you what their reviews actually say. What are you looking for?"
 const SYSTEM_PROMPT = `You are LocalBot, the AI assistant for AnyLocal — an AI-powered local business search platform.
@@ -16,7 +16,7 @@ You help customers with:
 
 Key info:
 - AnyLocal is free for customers to use — no commission, no hidden fees
-- Businesses on AnyLocal pay £15/month flat, so they pass savings on to customers
+- Business listing is free today; a Pro tier is planned but not billed yet
 - Quote responses usually arrive within 24 hours
 - Portal: customers can view all their quote requests and responses at anylocal.app/portal
 - To track quotes, customers just need to enter the email they used when requesting a quote
@@ -70,6 +70,12 @@ export default function ChatBot() {
 
       if (!res.ok || !res.body) throw new Error('Stream failed')
 
+      if ((res.headers.get('content-type') ?? '').includes('application/json')) {
+        const j = await res.json()
+        setMessages(prev => [...prev, { role: 'assistant', content: j.text ?? 'Chat is resting — try again in a moment.' }])
+        return
+      }
+
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
       let assistantText = ''
@@ -89,7 +95,7 @@ export default function ChatBot() {
     } catch {
       setMessages(prev => [
         ...prev,
-        { role: 'assistant', content: '⚠️ Something went wrong. Please try again.' },
+        { role: 'assistant', content: 'Something went wrong. Please try again.' },
       ])
     } finally {
       setLoading(false)
@@ -109,10 +115,10 @@ export default function ChatBot() {
         style={{
           position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
           width: 52, height: 52, borderRadius: '50%',
-          background: 'linear-gradient(135deg, #f97316, #ea580c)',
+          background: '#f0bc42',
           border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(249,115,22,0.45)',
+          boxShadow: '0 4px 20px rgba(240,188,66,0.45)',
           transition: 'transform 0.2s, box-shadow 0.2s',
         }}
         onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.08)')}
@@ -121,11 +127,11 @@ export default function ChatBot() {
         onMouseUp={e => (e.currentTarget.style.transform = 'scale(1.08)')}
       >
         {open ? (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1c1503" strokeWidth="2.5" strokeLinecap="round">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         ) : (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1c1503" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
             <circle cx="12" cy="10" r="3"/>
           </svg>
@@ -136,9 +142,9 @@ export default function ChatBot() {
       {open && (
         <div style={{
           position: 'fixed', bottom: 88, right: 24, zIndex: 9998,
-          width: 360, height: 500, borderRadius: 16,
-          background: '#0f0802', border: '1px solid rgba(249,115,22,0.25)',
-          boxShadow: '0 8px 40px rgba(0,0,0,0.7), 0 0 40px rgba(249,115,22,0.10)',
+          width: 'min(360px, calc(100vw - 32px))', height: 500, borderRadius: 16,
+          background: '#0f1419', border: '1px solid rgba(240,188,66,0.25)',
+          boxShadow: '0 8px 40px rgba(0,0,0,0.7), 0 0 40px rgba(240,188,66,0.10)',
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
           animation: 'local-slide-up 0.22s ease-out',
         }}>
@@ -149,26 +155,27 @@ export default function ChatBot() {
             }
             .local-msg::-webkit-scrollbar { width: 4px; }
             .local-msg::-webkit-scrollbar-track { background: transparent; }
-            .local-msg::-webkit-scrollbar-thumb { background: rgba(249,115,22,0.3); border-radius: 2px; }
+            .local-msg::-webkit-scrollbar-thumb { background: rgba(240,188,66,0.3); border-radius: 2px; }
             @keyframes local-bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
           `}</style>
 
           {/* Header */}
           <div style={{
-            padding: '12px 16px', borderBottom: '1px solid rgba(249,115,22,0.2)',
+            padding: '12px 16px', borderBottom: '1px solid rgba(240,188,66,0.2)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: 'linear-gradient(135deg, rgba(249,115,22,0.18) 0%, rgba(234,88,12,0.08) 100%)',
+            background: 'linear-gradient(135deg, rgba(240,188,66,0.18) 0%, rgba(240,188,66,0.08) 100%)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
                 width: 34, height: 34, borderRadius: '50%',
-                background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                background: '#f0bc42',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 16, boxShadow: '0 0 12px rgba(249,115,22,0.4)',
-              }}>📍</div>
+                fontSize: 16, boxShadow: '0 0 12px rgba(240,188,66,0.4)',
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1c1503" strokeWidth="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
               <div>
                 <div style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>{BOT_NAME}</div>
-                <div style={{ color: '#fdba74', fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ color: '#f0bc42', fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }}/>
                   Local search · Online
                 </div>
@@ -191,9 +198,9 @@ export default function ChatBot() {
                 <div style={{
                   maxWidth: '82%', padding: '9px 13px',
                   borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                  background: m.role === 'user' ? 'linear-gradient(135deg, #f97316, #ea580c)' : 'rgba(249,115,22,0.08)',
-                  border: m.role === 'user' ? 'none' : '1px solid rgba(249,115,22,0.2)',
-                  color: '#f0f0f0', fontSize: 13.5, lineHeight: 1.5,
+                  background: m.role === 'user' ? '#f0bc42' : 'rgba(240,188,66,0.08)',
+                  border: m.role === 'user' ? 'none' : '1px solid rgba(240,188,66,0.2)',
+                  color: m.role === 'user' ? '#1c1503' : '#f0f0f0', fontSize: 13.5, lineHeight: 1.5,
                   wordBreak: 'break-word', whiteSpace: 'pre-wrap',
                 }}>
                   {m.content}
@@ -205,7 +212,7 @@ export default function ChatBot() {
               <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
                 <div style={{
                   padding: '10px 14px', borderRadius: '16px 16px 16px 4px',
-                  background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)',
+                  background: 'rgba(240,188,66,0.08)', border: '1px solid rgba(240,188,66,0.2)',
                   display: 'flex', gap: 4, alignItems: 'center',
                 }}>
                   {[0, 1, 2].map(d => (
@@ -223,7 +230,7 @@ export default function ChatBot() {
 
           {/* Input */}
           <div style={{
-            padding: '10px 12px', borderTop: '1px solid rgba(249,115,22,0.15)',
+            padding: '10px 12px', borderTop: '1px solid rgba(240,188,66,0.15)',
             display: 'flex', gap: 8, alignItems: 'center',
             background: 'rgba(0,0,0,0.3)',
           }}>
@@ -236,26 +243,26 @@ export default function ChatBot() {
               aria-label="Message to LocalBot"
               disabled={loading}
               style={{
-                flex: 1, background: 'rgba(249,115,22,0.06)', border: '1px solid rgba(249,115,22,0.25)',
+                flex: 1, background: 'rgba(240,188,66,0.06)', border: '1px solid rgba(240,188,66,0.25)',
                 borderRadius: 10, padding: '9px 13px', color: '#f0f0f0',
                 fontSize: 13.5, outline: 'none', transition: 'border-color 0.15s',
               }}
               onFocus={e => (e.target.style.borderColor = ACCENT)}
-              onBlur={e => (e.target.style.borderColor = 'rgba(249,115,22,0.25)')}
+              onBlur={e => (e.target.style.borderColor = 'rgba(240,188,66,0.25)')}
             />
             <button
               onClick={send}
               disabled={loading || !input.trim()}
               aria-label="Send message"
               style={{
-                width: 38, height: 38, borderRadius: 10, border: 'none',
-                background: input.trim() && !loading ? 'linear-gradient(135deg, #f97316, #ea580c)' : 'rgba(255,255,255,0.06)',
+                width: 44, height: 44, borderRadius: 10, border: 'none',
+                background: input.trim() && !loading ? '#f0bc42' : 'rgba(255,255,255,0.06)',
                 cursor: input.trim() && !loading ? 'pointer' : 'not-allowed',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'background 0.15s', flexShrink: 0,
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1c1503" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"/>
                 <polygon points="22 2 15 22 11 13 2 9 22 2"/>
               </svg>

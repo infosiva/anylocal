@@ -121,7 +121,7 @@ export default function QuoteModal({ businesses, searchQuery, onClose }: Props) 
             <div className="flex flex-col gap-3">
               <a
                 href={`/portal?email=${encodeURIComponent(email)}`}
-                className="block w-full text-center px-6 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-semibold text-sm transition-colors"
+                className="block w-full text-center px-6 py-2.5 rounded-xl bg-[#f0bc42] hover:bg-[#f0bc42] text-white font-semibold text-sm transition-colors"
               >
                 Track my quotes →
               </a>
@@ -141,12 +141,12 @@ export default function QuoteModal({ businesses, searchQuery, onClose }: Props) 
               <p className="text-white/50 text-xs font-medium mb-2">Send quotes to:</p>
               <div className="space-y-2">
                 {businesses.map(b => (
-                  <label key={b.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border cursor-pointer transition-all ${selected.has(b.id) ? 'bg-orange-500/10 border-orange-500/30' : 'bg-white/[0.03] border-white/[0.06] opacity-50'}`}>
+                  <label key={b.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border cursor-pointer transition-all ${selected.has(b.id) ? 'bg-[#f0bc42]/10 border-[#f0bc42]/30' : 'bg-white/[0.03] border-white/[0.06] opacity-50'}`}>
                     <input
                       type="checkbox"
                       checked={selected.has(b.id)}
                       onChange={() => toggle(b.id)}
-                      className="accent-orange-500"
+                      className="accent-[#f0bc42]"
                     />
                     <div className="flex-1 min-w-0">
                       <div className="text-white text-sm font-medium truncate">{b.name}</div>
@@ -171,7 +171,7 @@ export default function QuoteModal({ businesses, searchQuery, onClose }: Props) 
                 onChange={e => setJob(e.target.value)}
                 placeholder={listening ? '🎤 Listening… speak now' : `e.g. "Need a plumber to fix a leaking pipe under the kitchen sink. Urgently needed."`}
                 rows={3}
-                className={`w-full bg-white/[0.04] border rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/30 outline-none resize-none transition-colors ${listening ? 'border-red-500/50 bg-red-500/5' : 'border-white/[0.10] focus:border-orange-500/50'}`}
+                className={`w-full bg-white/[0.04] border rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/30 outline-none resize-none transition-colors ${listening ? 'border-red-500/50 bg-red-500/5' : 'border-white/[0.10] focus:border-[#f0bc42]/50'}`}
               />
             </div>
 
@@ -187,7 +187,7 @@ export default function QuoteModal({ businesses, searchQuery, onClose }: Props) 
                   value={name}
                   onChange={e => setName(e.target.value)}
                   placeholder="John Smith"
-                  className="w-full bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-orange-500/50 transition-colors"
+                  className="w-full bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-[#f0bc42]/50 transition-colors"
                 />
               </div>
               <div>
@@ -199,7 +199,7 @@ export default function QuoteModal({ businesses, searchQuery, onClose }: Props) 
                   value={postcode}
                   onChange={e => setPostcode(e.target.value)}
                   placeholder="SW1A 1AA"
-                  className="w-full bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-orange-500/50 transition-colors"
+                  className="w-full bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-[#f0bc42]/50 transition-colors"
                 />
               </div>
             </div>
@@ -216,7 +216,7 @@ export default function QuoteModal({ businesses, searchQuery, onClose }: Props) 
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@email.com"
-                  className="w-full bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-orange-500/50 transition-colors"
+                  className="w-full bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-[#f0bc42]/50 transition-colors"
                 />
               </div>
               <div>
@@ -228,7 +228,7 @@ export default function QuoteModal({ businesses, searchQuery, onClose }: Props) 
                   value={phone}
                   onChange={e => setPhone(e.target.value)}
                   placeholder="+44 7700 000000"
-                  className="w-full bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-orange-500/50 transition-colors"
+                  className="w-full bg-white/[0.04] border border-white/[0.10] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-white/30 outline-none focus:border-[#f0bc42]/50 transition-colors"
                 />
               </div>
             </div>
@@ -240,7 +240,7 @@ export default function QuoteModal({ businesses, searchQuery, onClose }: Props) 
             <button
               type="submit"
               disabled={loading || !selected.size}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-700 hover:to-orange-500 transition-all duration-200 disabled:opacity-50 shadow-lg shadow-orange-500/20"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-[#f0bc42] to-[#f0bc42] hover:from-[#f0bc42] hover:to-[#f0bc42] transition-all duration-200 disabled:opacity-50 shadow-lg shadow-[#f0bc42]/20"
             >
               {loading ? (
                 <><div className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" /> Sending…</>

@@ -53,13 +53,13 @@ export async function POST(req: NextRequest) {
       html: `
         <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#080712;color:#f0eeff;">
           <div style="text-align:center;margin-bottom:32px;">
-            <h1 style="color:#f97316;font-size:28px;margin:0;">AnyLocal</h1>
+            <h1 style="color:#f0bc42;font-size:28px;margin:0;">AnyLocal</h1>
             <p style="color:#888;font-size:13px;margin:4px 0 0;">Find anything local, anywhere</p>
           </div>
           <h2 style="color:#ffffff;font-size:22px;">You're registered, ${displayName}!</h2>
           <p style="color:#aaa;line-height:1.6;">Thanks for joining AnyLocal. Your listing is being verified and will go live within <strong style="color:#fff;">24 hours</strong>.</p>
-          <div style="background:#1a1030;border:1px solid rgba(249,115,22,0.25);border-radius:12px;padding:20px;margin:24px 0;">
-            <h3 style="color:#f97316;margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:0.05em;">Your registration summary</h3>
+          <div style="background:#1a1030;border:1px solid rgba(240,188,66,0.25);border-radius:12px;padding:20px;margin:24px 0;">
+            <h3 style="color:#f0bc42;margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:0.05em;">Your registration summary</h3>
             <table style="width:100%;font-size:13px;">
               <tr><td style="color:#888;padding:4px 0;width:120px;">Name</td><td style="color:#fff;">${name}</td></tr>
               ${bizName ? `<tr><td style="color:#888;padding:4px 0;">Business</td><td style="color:#fff;">${bizName}</td></tr>` : ''}
@@ -72,10 +72,10 @@ export async function POST(req: NextRequest) {
             <li>Your listing goes live within <strong style="color:#fff;">24 hours</strong></li>
             <li>When a local customer searches your trade, you appear</li>
             <li>When they request a quote, you get the lead <strong style="color:#fff;">straight to this inbox</strong></li>
-            <li>You win the job — AnyLocal takes <strong style="color:#f97316;">zero commission</strong></li>
+            <li>You win the job — AnyLocal takes <strong style="color:#f0bc42;">zero commission</strong></li>
           </ul>
-          <div style="background:rgba(249,115,22,0.08);border-left:3px solid #f97316;padding:16px;border-radius:4px;margin:24px 0;">
-            <strong style="color:#f97316;">Your 30-day free trial starts today.</strong>
+          <div style="background:rgba(240,188,66,0.08);border-left:3px solid #f0bc42;padding:16px;border-radius:4px;margin:24px 0;">
+            <strong style="color:#f0bc42;">Your 30-day free trial starts today.</strong>
             <p style="color:#aaa;margin:4px 0 0;font-size:13px;">After 30 days, continue for just £15/month — less than a single call-out charge.</p>
           </div>
           <p style="color:#555;font-size:12px;text-align:center;margin-top:32px;">AnyLocal · anylocal.app · hello@anylocal.app</p>
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
       subject: `New business registration: ${displayName} — ${tradeList}`,
       html: `
         <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
-          <h2 style="color:#f97316;">New Business Registration</h2>
+          <h2 style="color:#f0bc42;">New Business Registration</h2>
           <table style="width:100%;border-collapse:collapse;font-size:14px;">
             <tr><td style="padding:6px 0;color:#888;width:120px;">Name</td><td><strong>${name}</strong></td></tr>
             <tr><td style="padding:6px 0;color:#888;">Business</td><td>${bizName || '—'}</td></tr>

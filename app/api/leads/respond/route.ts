@@ -60,17 +60,17 @@ export async function POST(req: NextRequest) {
       html: `
         <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#080712;color:#f0eeff;">
           <div style="text-align:center;margin-bottom:32px;">
-            <h1 style="color:#f97316;font-size:28px;margin:0;">AnyLocal</h1>
+            <h1 style="color:#f0bc42;font-size:28px;margin:0;">AnyLocal</h1>
           </div>
           <h2 style="color:#ffffff;">Good news, ${lead.name}!</h2>
           <p style="color:#aaa;line-height:1.6;"><strong style="color:#fff;">${businessName}</strong> has responded to your quote request.</p>
-          <div style="background:#1a1030;border:1px solid rgba(249,115,22,0.25);border-radius:12px;padding:20px;margin:24px 0;">
-            <h3 style="color:#f97316;margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:0.05em;">Their message</h3>
+          <div style="background:#1a1030;border:1px solid rgba(240,188,66,0.25);border-radius:12px;padding:20px;margin:24px 0;">
+            <h3 style="color:#f0bc42;margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:0.05em;">Their message</h3>
             <p style="color:#fff;line-height:1.6;margin:0;">${responseText}</p>
           </div>
           <div style="text-align:center;margin:32px 0;">
             <a href="${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://anylocal.app'}/portal?email=${encodeURIComponent(lead.email)}"
-               style="background:#f97316;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">
+               style="background:#f0bc42;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">
               View in your portal →
             </a>
           </div>

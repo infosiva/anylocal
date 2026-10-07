@@ -84,7 +84,7 @@ export const DRIP_EMAILS: Array<{
     html: (name) => `
       <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:#fff;">
         <div style="margin-bottom:24px;">
-          <span style="font-size:13px;font-weight:700;color:#f97316;letter-spacing:0.05em;text-transform:uppercase;">AnyLocal</span>
+          <span style="font-size:13px;font-weight:700;color:#f0bc42;letter-spacing:0.05em;text-transform:uppercase;">AnyLocal</span>
         </div>
         <h2 style="font-size:22px;font-weight:800;color:#111;margin:0 0 12px;">Hey ${name || 'there'} — any responses yet?</h2>
         <p style="color:#555;font-size:15px;line-height:1.6;margin:0 0 16px;">
@@ -96,7 +96,7 @@ export const DRIP_EMAILS: Array<{
           <li>Send another request to 2–3 more businesses for comparison quotes</li>
           <li>Check your spam folder for their replies</li>
         </ul>
-        <a href="https://anylocal.app/search" style="display:inline-block;background:#f97316;color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;">
+        <a href="https://anylocal.app/search" style="display:inline-block;background:#f0bc42;color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;">
           Search more tradespeople →
         </a>
         <hr style="border:none;border-top:1px solid #eee;margin:32px 0 16px;" />
@@ -109,7 +109,7 @@ export const DRIP_EMAILS: Array<{
     html: (name) => `
       <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:#fff;">
         <div style="margin-bottom:24px;">
-          <span style="font-size:13px;font-weight:700;color:#f97316;letter-spacing:0.05em;text-transform:uppercase;">AnyLocal</span>
+          <span style="font-size:13px;font-weight:700;color:#f0bc42;letter-spacing:0.05em;text-transform:uppercase;">AnyLocal</span>
         </div>
         <h2 style="font-size:22px;font-weight:800;color:#111;margin:0 0 12px;">Get better quotes faster, ${name || 'there'}</h2>
         <p style="color:#555;font-size:15px;line-height:1.6;margin:0 0 20px;">
@@ -131,7 +131,7 @@ export const DRIP_EMAILS: Array<{
               </td>
             </tr>`).join('')}
         </table>
-        <a href="https://anylocal.app/search" style="display:inline-block;background:#f97316;color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;">
+        <a href="https://anylocal.app/search" style="display:inline-block;background:#f0bc42;color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;">
           Find tradespeople now →
         </a>
         <hr style="border:none;border-top:1px solid #eee;margin:32px 0 16px;" />
@@ -144,7 +144,7 @@ export const DRIP_EMAILS: Array<{
     html: (name) => `
       <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:#fff;">
         <div style="margin-bottom:24px;">
-          <span style="font-size:13px;font-weight:700;color:#f97316;letter-spacing:0.05em;text-transform:uppercase;">AnyLocal</span>
+          <span style="font-size:13px;font-weight:700;color:#f0bc42;letter-spacing:0.05em;text-transform:uppercase;">AnyLocal</span>
         </div>
         <h2 style="font-size:22px;font-weight:800;color:#111;margin:0 0 12px;">Hey ${name || 'there'} — job sorted?</h2>
         <p style="color:#555;font-size:15px;line-height:1.6;margin:0 0 16px;">
@@ -156,7 +156,7 @@ export const DRIP_EMAILS: Array<{
         <a href="https://anylocal.app/search" style="display:inline-block;background:#111;color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;margin-right:12px;">
           Search tradespeople
         </a>
-        <a href="https://anylocal.app" style="display:inline-block;background:#f97316;color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;">
+        <a href="https://anylocal.app" style="display:inline-block;background:#f0bc42;color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;">
           Browse all trades
         </a>
         <hr style="border:none;border-top:1px solid #eee;margin:32px 0 16px;" />

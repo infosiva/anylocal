@@ -14,9 +14,9 @@ interface Message {
 
 export async function POST(req: NextRequest) {
   try {
-    const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
+    const ip = (req.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim()
     const { ok } = checkRateLimit(`chatbot_${ip}`, 60)
-    if (!ok) return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
+    if (!ok) return NextResponse.json({ text: 'You have sent a lot of messages this hour. Please try again a little later.' })
 
     const body = await req.json()
 
@@ -26,8 +26,8 @@ Help users find local businesses, understand how to search effectively, and get 
 Suggest relevant search queries, explain ratings, and help narrow down choices.
 Keep responses short, helpful, and location-aware. Use a friendly, practical tone.`
 
-    if (!messages?.length) {
-      return NextResponse.json({ error: 'messages required' }, { status: 400 })
+    if (!Array.isArray(messages) || !messages.length) {
+      return NextResponse.json({ text: 'Ask me about finding a local business.' })
     }
 
     const chatMessages: Message[] = [
@@ -37,7 +37,7 @@ Keep responses short, helpful, and location-aware. Use a friendly, practical ton
 
     try {
       const stream = await getGroq().chat.completions.create({
-        model: 'qwen/qwen3.8-27b',
+        model: 'llama-3.3-70b-versatile',
         messages: chatMessages,
         max_tokens: 600,
         temperature: 0.7,
@@ -69,6 +69,7 @@ Keep responses short, helpful, and location-aware. Use a friendly, practical ton
       console.error('[/api/chatbot] groq failed, falling back to gemini', groqErr)
       // Gemini fallback (§Y): non-streaming, but never a hard 500 on Groq outage
       if (process.env.GEMINI_API_KEY) {
+       try {
         const res = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`,
           {
@@ -89,6 +90,22 @@ Keep responses short, helpful, and location-aware. Use a friendly, practical ton
           const text = data.candidates?.[0]?.content?.parts?.[0]?.text
           if (text) return NextResponse.json({ text })
         }
+       } catch (e) { console.error('[/api/chatbot] gemini failed', e) }
+      }
+      // Cerebras fallback (third tier)
+      if (process.env.CEREBRAS_API_KEY) {
+        try {
+          const cr = await fetch('https://api.cerebras.ai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.CEREBRAS_API_KEY}` },
+            body: JSON.stringify({ model: 'llama3.1-8b', messages: chatMessages, max_tokens: 600 }),
+          })
+          if (cr.ok) {
+            const d = await cr.json()
+            const text = d.choices?.[0]?.message?.content
+            if (text) return NextResponse.json({ text })
+          }
+        } catch (e) { console.error('[/api/chatbot] cerebras failed', e) }
       }
       return NextResponse.json({ text: 'Chat is resting — try again in a moment.' })
     }

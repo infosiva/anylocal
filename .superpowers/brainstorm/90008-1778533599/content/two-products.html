@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two Product Redesigns</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0612; color: #e2e8f0; font-family: system-ui, sans-serif; padding: 24px; }
+  h1 { font-size: 22px; font-weight: 700; color: white; margin-bottom: 6px; }
+  .subtitle { color: #94a3b8; font-size: 14px; margin-bottom: 32px; }
+
+  .section-label { font-size: 11px; font-weight: 700; color: #f97316; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
+
+  .panel { border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
+  .panel-header { padding: 14px 18px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .panel-header.before { background: rgba(255,255,255,0.03); color: #64748b; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .panel-header.after  { background: rgba(249,115,22,0.08); color: #f97316; border-bottom: 1px solid rgba(249,115,22,0.15); }
+  .panel-body { padding: 16px; background: #0f0a1e; min-height: 320px; }
+
+  /* ── RESUMEVAULT BEFORE ── */
+  .before-form { display: flex; flex-direction: column; gap: 10px; }
+  .before-form label { font-size: 10px; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; display: block; }
+  .before-form textarea, .before-form input {
+    width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; padding: 8px 10px; color: #cbd5e1; font-size: 11px; resize: none;
+  }
+  .before-btn { background: linear-gradient(135deg, #ea580c, #f97316); color: white; border: none; border-radius: 8px; padding: 9px 18px; font-size: 11px; font-weight: 600; cursor: pointer; }
+
+  /* ── RESUMEVAULT AFTER ── */
+  .after-resume {
+    background: white; border-radius: 10px; padding: 18px; color: #1a1a2e;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.4);
+  }
+  .resume-header { margin-bottom: 14px; padding-bottom: 12px; border-bottom: 2px solid; border-image: linear-gradient(90deg, hsl(187,74%,32%), hsl(270,70%,45%)) 1; }
+  .resume-name { font-size: 20px; font-weight: 700; color: #1a1a2e; font-family: 'Space Grotesk', system-ui, sans-serif; }
+  .resume-title { font-size: 11px; color: #555; margin-top: 2px; }
+  .resume-contact { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+  .resume-contact span { font-size: 9px; color: #777; }
+  .resume-section { margin-bottom: 12px; }
+  .resume-section-title { font-size: 9px; font-weight: 700; color: hsl(187,74%,32%); text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #e5e7eb; padding-bottom: 3px; margin-bottom: 8px; }
+  .resume-job { margin-bottom: 8px; }
+  .resume-job-title { font-size: 11px; font-weight: 600; color: #1a1a2e; }
+  .resume-job-meta { font-size: 9px; color: #777; margin-bottom: 4px; }
+  .resume-bullet { font-size: 9px; color: #444; line-height: 1.5; padding-left: 10px; position: relative; margin-bottom: 2px; }
+  .resume-bullet::before { content: '•'; position: absolute; left: 2px; color: hsl(187,74%,32%); }
+  .skills-grid { display: flex; flex-wrap: wrap; gap: 4px; }
+  .skill-tag { background: hsl(187,40%,95%); color: hsl(187,74%,28%); border-radius: 3px; padding: 2px 6px; font-size: 8px; font-weight: 600; }
+  .ats-badge { position: absolute; top: 8px; right: 8px; background: linear-gradient(135deg, #16a34a, #22c55e); color: white; border-radius: 20px; font-size: 8px; font-weight: 700; padding: 3px 8px; }
+
+  /* ── ANYLOCAL BEFORE ── */
+  .list-before { display: flex; flex-direction: column; gap: 8px; }
+  .list-card-before { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px; }
+  .list-card-before .name { font-size: 11px; font-weight: 600; color: white; }
+  .list-card-before .meta { font-size: 9px; color: #64748b; margin-top: 2px; }
+  .toggle-btn { margin-top: 8px; font-size: 9px; color: #94a3b8; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 3px 8px; display: inline-block; }
+
+  /* ── ANYLOCAL AFTER ── */
+  .split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; height: 290px; }
+  .results-panel { display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+  .result-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 8px; transition: border-color 0.2s; }
+  .result-card.active { border-color: rgba(249,115,22,0.4); background: rgba(249,115,22,0.05); }
+  .result-card .rname { font-size: 10px; font-weight: 600; color: white; }
+  .result-card .rmeta { font-size: 8px; color: #64748b; margin-top: 1px; }
+  .result-card .rtags { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
+  .rtag { font-size: 7px; padding: 2px 6px; border-radius: 4px; }
+  .rtag.call { background: rgba(249,115,22,0.2); color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
+  .rtag.web  { background: rgba(255,255,255,0.05); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); }
+  .rtag.quote { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.25); }
+  .rtag.ai   { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.25); }
+  .trust { font-size: 7px; padding: 1px 5px; border-radius: 10px; float: right; margin-top: 2px; }
+  .trust.excellent { background: rgba(22,163,74,0.15); color: #4ade80; border: 1px solid rgba(22,163,74,0.25); }
+  .trust.good      { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+  .map-panel { background: #1a1b2e; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; }
+  .map-grid { position: absolute; inset: 0; opacity: 0.1; }
+  .map-pin { position: absolute; width: 20px; height: 20px; border: 2px solid white; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: 0 2px 8px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
+  .map-pin-num { transform: rotate(45deg); color: white; font-size: 8px; font-weight: 700; }
+  .map-popup { position: absolute; background: #1e1535; border: 1px solid rgba(249,115,22,0.4); border-radius: 6px; padding: 5px 8px; white-space: nowrap; }
+  .map-popup .pname { color: white; font-size: 9px; font-weight: 600; }
+  .map-popup .pmeta { color: #f97316; font-size: 8px; margin-top: 1px; }
+  .dist-badge { position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.6); color: #94a3b8; border-radius: 4px; font-size: 8px; padding: 2px 6px; }
+
+  .product-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 8px 0 32px; }
+
+  .feature-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .feature-chip { font-size: 10px; padding: 4px 10px; border-radius: 20px; }
+  .chip-green  { background: rgba(22,163,74,0.1);  color: #4ade80; border: 1px solid rgba(22,163,74,0.2); }
+  .chip-blue   { background: rgba(59,130,246,0.1); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
+  .chip-purple { background: rgba(139,92,246,0.1); color: #a78bfa; border: 1px solid rgba(139,92,246,0.2); }
+  .chip-orange { background: rgba(249,115,22,0.1); color: #fb923c; border: 1px solid rgba(249,115,22,0.2); }
+</style>
+</head>
+<body>
+
+<h1>Two Product Redesigns</h1>
+<p class="subtitle">Current state vs proposed — click to explore both, pick what resonates</p>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  PRODUCT 1: RESUMEVAULT                               -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<div class="section-label">Product 1 — ResumeVault (resumevault.app)</div>
+
+<div class="split">
+
+  <!-- BEFORE -->
+  <div class="panel">
+    <div class="panel-header before">⚠ Current — Plain text in / text out</div>
+    <div class="panel-body">
+      <div class="before-form">
+        <div>
+          <label>Your name</label>
+          <input type="text" value="John Smith" readonly style="height:30px;">
+        </div>
+        <div>
+          <label>Job description (paste here)</label>
+          <textarea rows="3" readonly>Senior Software Engineer at Stripe. Must have 5+ years experience in distributed systems...</textarea>
+        </div>
+        <div>
+          <label>Your experience</label>
+          <textarea rows="3" readonly>Worked at Google for 3 years as backend engineer. Built microservices...</textarea>
+        </div>
+        <button class="before-btn">Generate Resume ▶</button>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:10px;margin-top:4px;">
+          <div style="font-size:9px;color:#475569;margin-bottom:6px;">OUTPUT (raw AI text)</div>
+          <div style="font-size:9px;color:#94a3b8;line-height:1.7;">
+            John Smith | john@email.com | London<br>
+            <strong style="color:#cbd5e1;">EXPERIENCE</strong><br>
+            Google — Backend Engineer (2021–2024)<br>
+            • Built microservices for payments...<br>
+            <span style="color:#475569;font-style:italic;">...no design, no PDF, just text dump</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AFTER -->
+  <div class="panel">
+    <div class="panel-header after">✦ Redesign — Inspired by career-ops template</div>
+    <div class="panel-body" style="position:relative;">
+      <div class="ats-badge">ATS Score 94%</div>
+      <div class="after-resume">
+        <div class="resume-header">
+          <div class="resume-name">John Smith</div>
+          <div class="resume-title">Senior Software Engineer</div>
+          <div class="resume-contact">
+            <span>✉ john@email.com</span>
+            <span>📍 London, UK</span>
+            <span>🔗 linkedin.com/in/johnsmith</span>
+            <span>💻 github.com/jsmith</span>
+          </div>
+        </div>
+
+        <div class="resume-section">
+          <div class="resume-section-title">Professional Summary</div>
+          <div style="font-size:9px;color:#444;line-height:1.5;">Backend engineer with 6+ years building distributed systems at scale. Led payment infrastructure at Google serving 10M+ daily transactions. Strong background in Stripe API ecosystem.</div>
+        </div>
+
+        <div class="resume-section">
+          <div class="resume-section-title">Experience</div>
+          <div class="resume-job">
+            <div class="resume-job-title">Backend Engineer · Google</div>
+            <div class="resume-job-meta">Jan 2021 – Mar 2024 · London</div>
+            <div class="resume-bullet">Designed microservices architecture handling 10M+ daily payment transactions</div>
+            <div class="resume-bullet">Reduced API latency by 40% through distributed caching layer using Redis</div>
+            <div class="resume-bullet">Mentored 4 junior engineers; introduced TDD practices across team</div>
+          </div>
+        </div>
+
+        <div class="resume-section">
+          <div class="resume-section-title">Skills</div>
+          <div class="skills-grid">
+            <span class="skill-tag">Distributed Systems</span>
+            <span class="skill-tag">Go</span>
+            <span class="skill-tag">Stripe API</span>
+            <span class="skill-tag">Redis</span>
+            <span class="skill-tag">Kubernetes</span>
+            <span class="skill-tag">PostgreSQL</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-list">
+        <span class="feature-chip chip-green">Space Grotesk + DM Sans fonts</span>
+        <span class="feature-chip chip-blue">Cyan→Purple gradient header</span>
+        <span class="feature-chip chip-purple">PDF download (Playwright)</span>
+        <span class="feature-chip chip-orange">JD keyword injection</span>
+        <span class="feature-chip chip-green">ATS score meter</span>
+        <span class="feature-chip chip-blue">Live preview as you type</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<hr class="product-divider">
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  PRODUCT 2: ANYLOCAL SEARCH PAGE                      -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<div class="section-label">Product 2 — AnyLocal Search Page (tradespot)</div>
+
+<div class="split">
+
+  <!-- BEFORE -->
+  <div class="panel">
+    <div class="panel-header before">⚠ Current — List + separate map toggle</div>
+    <div class="panel-body">
+      <div style="display:flex;gap:6px;margin-bottom:10px;align-items:center;">
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:5px 10px;flex:1;font-size:10px;color:#475569;">🔍 plumber near me</div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:5px 8px;font-size:10px;color:#475569;">≡ List</div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:5px 8px;font-size:10px;color:#475569;">🗺 Map</div>
+      </div>
+      <div class="list-before">
+        <div class="list-card-before">
+          <div style="display:flex;gap:8px;align-items:start;">
+            <div style="width:24px;height:24px;background:rgba(245,158,11,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fbbf24;">#1</div>
+            <div style="flex:1">
+              <div class="name">Ace Plumbers Ltd</div>
+              <div class="meta">📍 123 High St · ⭐ 4.8 (312) · ✅ Open</div>
+              <div class="toggle-btn">▾ AI review summary</div>
+            </div>
+          </div>
+        </div>
+        <div class="list-card-before">
+          <div style="display:flex;gap:8px;align-items:start;">
+            <div style="width:24px;height:24px;background:rgba(255,255,255,0.06);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#94a3b8;">#2</div>
+            <div style="flex:1">
+              <div class="name">City Plumbing Co</div>
+              <div class="meta">📍 45 Baker St · ⭐ 4.5 (201)</div>
+            </div>
+          </div>
+        </div>
+        <div class="list-card-before">
+          <div style="display:flex;gap:8px;align-items:start;">
+            <div style="width:24px;height:24px;background:rgba(255,255,255,0.04);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#64748b;">#3</div>
+            <div style="flex:1">
+              <div class="name">FastFix Plumbers</div>
+              <div class="meta">📍 78 Park Lane · ⭐ 4.3 (98)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:9px;color:#475569;font-style:italic;">Map is hidden, requires click to show</div>
+    </div>
+  </div>
+
+  <!-- AFTER -->
+  <div class="panel">
+    <div class="panel-header after">✦ Redesign — Split pane + rich cards + distance</div>
+    <div class="panel-body">
+      <div style="display:flex;gap:6px;margin-bottom:10px;align-items:center;">
+        <div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.2);border-radius:6px;padding:5px 10px;flex:1;font-size:10px;color:#fb923c;">🔍 plumber near me</div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:5px 8px;font-size:9px;color:#cbd5e1;">⚡ Open now</div>
+        <div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.2);border-radius:6px;padding:5px 8px;font-size:9px;color:#f97316;">⭐ 4.0+</div>
+      </div>
+      <div class="split-layout">
+        <!-- Left: results -->
+        <div class="results-panel">
+          <div class="result-card active">
+            <div style="display:flex;justify-content:space-between;align-items:start;">
+              <div>
+                <div class="rname">Ace Plumbers Ltd</div>
+                <div class="rmeta">⭐ 4.8 · 312 reviews · 📍 0.4 mi · ✅ Open</div>
+              </div>
+              <span class="trust excellent">Excellent</span>
+            </div>
+            <div class="rtags">
+              <span class="rtag call">📞 Call</span>
+              <span class="rtag web">🌐 Web</span>
+              <span class="rtag quote">💬 Quote</span>
+              <span class="rtag ai">🤖 AI summary</span>
+            </div>
+          </div>
+          <div class="result-card">
+            <div style="display:flex;justify-content:space-between;align-items:start;">
+              <div>
+                <div class="rname">City Plumbing Co</div>
+                <div class="rmeta">⭐ 4.5 · 201 reviews · 📍 0.7 mi</div>
+              </div>
+              <span class="trust good">Good</span>
+            </div>
+            <div class="rtags">
+              <span class="rtag call">📞 Call</span>
+              <span class="rtag quote">💬 Quote</span>
+            </div>
+          </div>
+          <div class="result-card">
+            <div>
+              <div class="rname">FastFix Plumbers</div>
+              <div class="rmeta">⭐ 4.3 · 98 reviews · 📍 1.2 mi</div>
+            </div>
+            <div class="rtags">
+              <span class="rtag call">📞 Call</span>
+              <span class="rtag web">🌐 Web</span>
+            </div>
+          </div>
+        </div>
+        <!-- Right: map always visible -->
+        <div class="map-panel">
+          <svg class="map-grid" xmlns="http://www.w3.org/2000/svg">
+            <line x1="25%" y1="0" x2="25%" y2="100%" stroke="#888" stroke-width="1"/>
+            <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#888" stroke-width="1"/>
+            <line x1="75%" y1="0" x2="75%" y2="100%" stroke="#888" stroke-width="1"/>
+            <line x1="0" y1="33%" x2="100%" y2="33%" stroke="#888" stroke-width="1"/>
+            <line x1="0" y1="66%" x2="100%" y2="66%" stroke="#888" stroke-width="1"/>
+          </svg>
+          <!-- Pin 1 active -->
+          <div class="map-pin" style="top:28%;left:38%;background:#f97316;">
+            <span class="map-pin-num">1</span>
+          </div>
+          <!-- Popup for pin 1 -->
+          <div class="map-popup" style="top:8%;left:45%;">
+            <div class="pname">Ace Plumbers Ltd</div>
+            <div class="pmeta">⭐ 4.8 · Open now · 0.4 mi</div>
+          </div>
+          <!-- Pin 2 -->
+          <div class="map-pin" style="top:50%;left:60%;background:#4b5563;">
+            <span class="map-pin-num">2</span>
+          </div>
+          <!-- Pin 3 -->
+          <div class="map-pin" style="top:65%;left:25%;background:#4b5563;">
+            <span class="map-pin-num">3</span>
+          </div>
+          <div class="dist-badge">📍 Your location detected</div>
+        </div>
+      </div>
+      <div class="feature-list" style="margin-top:10px;">
+        <span class="feature-chip chip-orange">Always-visible map</span>
+        <span class="feature-chip chip-green">Distance per result</span>
+        <span class="feature-chip chip-blue">Click result → pulse pin</span>
+        <span class="feature-chip chip-purple">Filter: open now / rating</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// inject helper manually since this is a full doc
+</script>
+</body>
+</html>
