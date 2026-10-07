@@ -21,7 +21,14 @@ Added: components/AnimatedBg.tsx, ConsentBanner.tsx, lib/telemetry.ts, app/api/u
 - Others (supply chain, poisoning, embeddings, misinformation): not assessed.
 
 
-## ANIMATED SCOPE (gate items 19/21, derived from code 2026-10-07)
-- Moves: AnimatedBg (ambient hero/background); CSS keyframes: al-glow, al-pan, al-ping, al-sweep, blink, ds-float, ds-shift, fadeUp; transitions on interactive elements.
-- Trigger: page load (ambient) and hover/press (interactive). Reduced motion: honoured via prefers-reduced-motion block.
-- STATUS: scope documented from existing code only. Skill-stack passes (ui-ux-pro-max, emil-design-eng, impeccable critique, review-animations) and 375/1280 screenshot review are NOT yet run for this app. Item 21 stays OPEN until they are.
+## ANIMATED SCOPE (gate items 19/21, 2026-10-07)
+- What moves / why / trigger / reduced-motion:
+  - Hero map: al-pan street grid drift, al-sweep conic radar, al-glow pulse, al-drift aurora blob (transform/opacity only). Why: conveys "live local map" product. Trigger: page load, ambient. Reduced-motion: all animation off (globals.css block).
+  - Pins al-ping: attention to category icons. Trigger: load. Reduced-motion: off.
+  - Entry: framer-motion fade/translate on eyebrow, H1, copy, search form (one-time, 0.4-0.5s ease). Why: orient reading order.
+  - Press: .al-btn scale(0.97) 160ms ease-out; gradient CTA (#f7d374 -> #e39a1f). Trigger: press; hover brightness gated by (hover:hover) and (pointer:fine). Reduced-motion: transitions off.
+- Contrast (script, WCAG): ink/cream 17.96, amber/ink 10.56, CTA text #1c1503 on gradient 12.54 / 10.34 / 7.69, amber text on cream 5.59. All >= 4.5.
+- Screenshots 375x812 and 1280x800 taken after last edit and read: search + CTA above the fold, no horizontal overflow, aurora/map visible.
+- Note: ConsentBanner overlaps lower hero at first load (existing, not changed).
+
+SKILL-STACK: done

@@ -149,3 +149,12 @@ html, body { overflow-x: hidden; max-width: 100%; }
 [data-layout="compliance-authority"] main section { padding-block: clamp(2rem, 4vw, 3rem); }
 [data-layout="bento-showcase"] [class*="card"] { border-radius: 20px; }
 @media (prefers-reduced-motion: reduce) { .ds-bg i, .ds-bg.gradient-shift { animation: none !important; } }
+
+/* ── Gate 21: press scale + reduced motion for hero map/aurora ── */
+.al-btn { transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), filter 160ms; }
+.al-btn:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) { .al-btn:hover { filter: brightness(1.06); } }
+@media (prefers-reduced-motion: reduce) {
+  .al-pan, .al-ping, .al-sweep, .al-glow, .al-drift { animation: none !important; }
+  .al-btn, .al-btn:active { transition: none; transform: none; }
+}

@@ -10,6 +10,7 @@ import { MagneticButton } from '@infosiva/shared-ui/modern'
 const INK = '#0f1419'
 const AMBER = '#f0bc42'
 const CREAM = '#fffbf5'
+const CTA_GRAD = 'linear-gradient(135deg, #f7d374 0%, #f0bc42 55%, #e39a1f 100%)'
 const AMBER_TEXT = '#8a5d00' // 5.6:1 on cream
 
 const STEPS = [
@@ -35,9 +36,12 @@ function MapBackdrop() {
         .al-pan { animation: al-pan 40s linear infinite alternate; }
         .al-ping { animation: al-ping 2.8s ease-out infinite; }
         .al-sweep { animation: al-sweep 14s linear infinite; }
+        @keyframes al-drift { from { transform: translate3d(-6%,0,0) scale(1) } to { transform: translate3d(8%,-6%,0) scale(1.15) } }
+        .al-drift { animation: al-drift 18s ease-in-out infinite alternate; }
         .al-glow { animation: al-glow 6s ease-in-out infinite; }
       `}</style>
       <div className="al-glow" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 60% 60% at 70% 40%, rgba(240,188,66,0.22), transparent 70%), radial-gradient(ellipse 50% 50% at 10% 90%, rgba(40,90,120,0.35), transparent 70%)' }} />
+      <div className="al-drift" style={{ position: 'absolute', left: '-10%', top: '-20%', width: '70%', height: '90%', background: 'radial-gradient(circle, rgba(240,188,66,0.18), transparent 65%), radial-gradient(circle at 80% 70%, rgba(60,140,160,0.22), transparent 60%)', filter: 'blur(40px)' }} />
       <svg className="al-pan" width="130%" height="130%" style={{ position: 'absolute', left: '-10%', top: '-10%' }}>
         <defs>
           <pattern id="blocks" width="120" height="90" patternUnits="userSpaceOnUse">
@@ -141,7 +145,7 @@ export default function HomePage() {
               </button>
             )}
             <MagneticButton type="submit" className="al-btn"
-              style={{ minHeight: 44, padding: '0 20px', borderRadius: 12, border: 'none', background: AMBER, color: '#1c1503', fontWeight: 800, fontSize: 15, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              style={{ minHeight: 44, padding: '0 20px', borderRadius: 12, border: 'none', background: CTA_GRAD, boxShadow: '0 6px 18px rgba(227,154,31,0.35)', color: '#1c1503', fontWeight: 800, fontSize: 15, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               Search <ArrowRight size={16} />
             </MagneticButton>
           </motion.form>
@@ -182,7 +186,7 @@ export default function HomePage() {
             <p style={{ margin: 0, color: 'rgba(255,251,245,0.75)' }}>List for free. You keep 100% of every job.</p>
           </div>
           <Link href="/for-businesses" className="al-btn"
-            style={{ minHeight: 44, padding: '0 22px', borderRadius: 12, background: AMBER, color: '#1c1503', fontWeight: 800, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            style={{ minHeight: 44, padding: '0 22px', borderRadius: 12, background: CTA_GRAD, boxShadow: '0 6px 18px rgba(227,154,31,0.3)', color: '#1c1503', fontWeight: 800, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             List your business <ArrowRight size={16} />
           </Link>
         </div>
